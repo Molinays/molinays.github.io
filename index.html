@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#070a12">
-  <meta name="description" content="Molinays — progetti, server, hardware e video editing.">
+  <meta name="description" data-i18n-content="meta.description" content="Molinays — progetti, server, hardware e video editing.">
   <title>Molinays — portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/styles.css?v=33">
-  <script src="assets/app.js?v=33" defer></script>
+  <link rel="stylesheet" href="assets/styles.css?v=41">
+  <script src="assets/app.js?v=41" defer></script>
 </head>
 <body>
   <div class="boot" id="boot" aria-hidden="true">
@@ -22,31 +22,38 @@
   <canvas id="ambient" aria-hidden="true"></canvas>
   <header class="wrap topbar">
     <a class="brand" href="#top">Molinays<span>.</span></a>
-    <nav class="nav" aria-label="Navigazione"><a href="#progetti">Progetti</a><a href="#percorso">Percorso</a><a href="#oltre">Oltre il codice</a><a href="#contatti">Contatti</a></nav>
-    <div class="top-status"><i></i><span id="nav-presence">ONLINE</span></div>
+    <nav class="nav" data-i18n-aria-label="nav.label" aria-label="Navigazione"><a href="#progetti" data-i18n="nav.projects">Progetti</a><a href="#percorso" data-i18n="nav.journey">Percorso</a><a href="#oltre" data-i18n="nav.beyond">Oltre il codice</a><a href="#contatti" data-i18n="nav.contact">Contatti</a></nav>
+    <div class="top-actions">
+      <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Passa all'inglese" title="Passa all'inglese">
+        <svg class="lang-globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9Z"/></svg>
+        <span class="lang-pair" aria-hidden="true"><b id="lang-current">IT</b><i>⇄</i><span id="lang-next">EN</span></span>
+      </button>
+      <div class="top-status"><i></i><span id="nav-presence">ONLINE</span></div>
+    </div>
   </header>
+  <span class="sr-only" id="lang-status" role="status" aria-live="polite"></span>
   <main id="top">
-    <section class="wrap hero" aria-label="Presentazione">
+    <section class="wrap hero" data-i18n-aria-label="hero.label" aria-label="Presentazione">
       <div class="hero-copy reveal">
-        <div class="mono eyebrow">Avevo voglia di fare un Portfolio</div>
+        <div class="mono eyebrow" data-i18n="hero.eyebrow">Avevo voglia di fare un Portfolio</div>
         <h1>Molinays<span class="dot">.</span></h1>
-        <p>Tra <b>codice, server e hardware</b>. 18 y/o Developer ed Editor, adoro usare i computer, quindi perché non farlo?.</p>
-        <div class="hero-ctas"><a class="button" href="#progetti">Esplora i progetti <span aria-hidden="true">↘</span></a><a class="button ghost" href="https://github.com/Molinays" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
-        <div class="hero-foot"><span class="scroll-cue"><i></i>SCORRI PER ESPLORARE</span><span>·</span><span>I progetti sono animati eh</span></div>
+        <p data-i18n-html="hero.desc">Tra <b>codice, server e hardware</b>. 18 y/o Developer ed Editor, adoro usare i computer, quindi perché non farlo?.</p>
+        <div class="hero-ctas"><a class="button" href="#progetti"><span data-i18n="hero.cta">Esplora i progetti</span> <span aria-hidden="true">↘</span></a><a class="button ghost" href="https://github.com/Molinays" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
+        <div class="hero-foot"><span class="scroll-cue"><i></i><span data-i18n="hero.scroll">SCORRI PER ESPLORARE</span></span><span>·</span><span data-i18n="hero.note">I progetti sono animati eh</span></div>
       </div>
       <div class="profile-wrap reveal">
         <div class="profile-orbit" aria-hidden="true"></div>
-        <article class="discord-card" aria-label="Profilo Discord live tramite Lanyard">
-          <div class="card-top"><div class="discord-word"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.27 5.33A17.8 17.8 0 0 0 14.9 4l-.54 1.1a16.6 16.6 0 0 0-4.72 0L9.1 4a17.8 17.8 0 0 0-4.37 1.33C1.96 9.4 1.2 13.38 1.58 17.3a18 18 0 0 0 5.37 2.7l1.16-1.9c-.64-.24-1.25-.54-1.83-.9l.45-.35a12.8 12.8 0 0 0 10.54 0l.45.35c-.58.36-1.2.66-1.84.9l1.17 1.9a18 18 0 0 0 5.37-2.7c.45-4.55-.77-8.5-3.15-11.97ZM8.54 14.9c-1.04 0-1.9-.95-1.9-2.12s.84-2.13 1.9-2.13 1.91.96 1.9 2.13c0 1.17-.84 2.12-1.9 2.12Zm6.92 0c-1.05 0-1.9-.95-1.9-2.12s.84-2.13 1.9-2.13 1.9.96 1.9 2.13-.84 2.12-1.9 2.12Z"/></svg>DISCORD / LIVE</div><div class="presence-label"><i class="presence-dot" id="presence-dot"></i><span id="presence-text">Connessione</span></div></div>
-          <div class="user"><div class="avatar-wrap"><img class="avatar" id="discord-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar Discord"><i class="avatar-dot" id="avatar-dot"></i></div><div><div class="discord-name" id="discord-name">Molinays</div><div class="discord-handle" id="discord-handle">@molinays</div><div class="discord-state" id="discord-state">Connessione a Lanyard</div></div></div>
-          <div class="activity"><div class="activity-icon" id="activity-icon" aria-hidden="true">D</div><div class="activity-body"><div class="activity-title" id="activity-title">Presenza Discord</div><div class="activity-sub" id="activity-sub">Attività e musica, se condivise</div></div></div>
-          <div class="card-bottom"><span>Contattami su Discord</span><i class="ping" aria-hidden="true"></i></div>
+        <article class="discord-card" data-i18n-aria-label="discord.label" aria-label="Profilo Discord live tramite Lanyard">
+          <div class="card-top"><div class="discord-word"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.27 5.33A17.8 17.8 0 0 0 14.9 4l-.54 1.1a16.6 16.6 0 0 0-4.72 0L9.1 4a17.8 17.8 0 0 0-4.37 1.33C1.96 9.4 1.2 13.38 1.58 17.3a18 18 0 0 0 5.37 2.7l1.16-1.9c-.64-.24-1.25-.54-1.83-.9l.45-.35a12.8 12.8 0 0 0 10.54 0l.45.35c-.58.36-1.2.66-1.84.9l1.17 1.9a18 18 0 0 0 5.37-2.7c.45-4.55-.77-8.5-3.15-11.97ZM8.54 14.9c-1.04 0-1.9-.95-1.9-2.12s.84-2.13 1.9-2.13 1.91.96 1.9 2.13c0 1.17-.84 2.12-1.9 2.12Zm6.92 0c-1.05 0-1.9-.95-1.9-2.12s.84-2.13 1.9-2.13 1.9.96 1.9 2.13-.84 2.12-1.9 2.12Z"/></svg>DISCORD / LIVE</div><div class="presence-label"><i class="presence-dot" id="presence-dot"></i><span id="presence-text" data-i18n="discord.connecting">Connessione</span></div></div>
+          <div class="user"><div class="avatar-wrap"><img class="avatar" id="discord-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" data-i18n-alt="discord.avatarAlt" alt="Avatar Discord"><i class="avatar-dot" id="avatar-dot"></i></div><div><div class="discord-name" id="discord-name">Molinays</div><div class="discord-handle" id="discord-handle">@molinays</div><div class="discord-state" id="discord-state" data-i18n="discord.stateConnecting">Connessione a Lanyard</div></div></div>
+          <div class="activity"><div class="activity-icon" id="activity-icon" aria-hidden="true">D</div><div class="activity-body"><div class="activity-title" id="activity-title" data-i18n="discord.activityTitle">Presenza Discord</div><div class="activity-sub" id="activity-sub" data-i18n="discord.activitySub">Attività e musica, se condivise</div></div></div>
+          <div class="card-bottom"><span data-i18n="discord.cta">Contattami su Discord</span><i class="ping" aria-hidden="true"></i></div>
         </article>
-        <div class="profile-caption"><a href="https://discord.com/users/958753896346566696" target="_blank" rel="noreferrer">APRI PROFILO ↗</a></div>
+        <div class="profile-caption"><a href="https://discord.com/users/958753896346566696" target="_blank" rel="noreferrer" data-i18n="discord.open">APRI PROFILO ↗</a></div>
       </div>
     </section>
-    <div class="tech-strip"><div class="wrap tech-inner"><span class="tech-label">Puoi chiamarmi per</span><span class="tech-item">DEV</span><span class="tech-item">SELF-HOSTING</span><span class="tech-item">HARDWARE</span><span class="tech-item">VIDEO EDITING</span><span class="tech-item">GAMING</span></div></div>
-    <section class="road" id="progetti" aria-label="Portfolio progetti: scorri per avanzare">
+    <div class="tech-strip"><div class="wrap tech-inner"><span class="tech-label" data-i18n="tech.label">Puoi chiamarmi per</span><span class="tech-item">DEV</span><span class="tech-item">SELF-HOSTING</span><span class="tech-item">HARDWARE</span><span class="tech-item">VIDEO EDITING</span><span class="tech-item">GAMING</span></div></div>
+    <section class="road" id="progetti" data-i18n-aria-label="projects.label" aria-label="Portfolio progetti: scorri per avanzare">
       <div class="road-stage">
         <div class="road-sky" aria-hidden="true"></div>
         <div class="road-horizon" aria-hidden="true"></div>
@@ -56,63 +63,63 @@
           <i class="road-edge edge-a"></i>
           <i class="road-edge edge-b"></i>
         </div>
-        <div class="road-head wrap"><div><span class="mono section-index">01 / PORTFOLIO</span><h2>I miei progetti</h2></div><div class="road-count"><span id="road-count">01</span><i></i><span id="road-total">04</span></div></div>
+        <div class="road-head wrap"><div><span class="mono section-index">01 / PORTFOLIO</span><h2 data-i18n="projects.title">I miei progetti</h2></div><div class="road-count"><span id="road-count">01</span><i></i><span id="road-total">04</span></div></div>
         <div class="road-deck" id="road-deck">
-          <article class="road-card" data-project="0"><div class="project-copy"><div class="project-meta"><span>01</span><span>VIDEO / POST-PRODUCTION</span></div><h3>Gaming, cut.</h3><p>Editing di video gaming long-form o contenuti verticali per YouTube, Instagram, TikTok..<p>Se hai bisogno di un editor, contattami al più presto!</p></p><div class="project-tags"><span>LONG-FORM</span><span>SHORT-FORM</span><span>GAMING / VLOG</span></div><a class="project-link" href="#contatti">Qui non ho ancora nulla.. <b>↗</b></a></div><div class="project-art art-edit" aria-hidden="true"><div class="art-grid"></div><div class="cut-timeline"><div class="cut-label">TIMELINE / SEQUENZA · 24 FPS</div><div class="cut-track one"></div><div class="cut-track two"></div><div class="cut-track three"></div><i class="cut-playhead"></i></div><span class="art-caption">RENDERIZZA IL MEGLIO</span></div></article>
-          <article class="road-card" data-project="1"><div class="project-copy"><div class="project-meta"><span>02</span><span>WINDOWS / POWERSHELL</span></div><h3>MoliOptimizer</h3><p>Una toolbox per ottimizzare e personalizzare Windows: tweak reversibili con backup, privacy, servizi, pulizia memoria, scansione PC e oltre 120 app.<p>Posso affermare che sia il miglior <b>Ram Cleaner</b> in circolaizone.</p></p><div class="project-tags"><span>POWERSHELL</span><span>WINDOWS 10 / 11</span><span>OPEN SOURCE</span></div><a class="project-link" href="https://github.com/Molinays/MoliOptimizer" target="_blank" rel="noreferrer">Apri repository <b>↗</b></a></div><div class="project-art art-optimizer" aria-hidden="true"><div class="art-grid"></div><div class="art-orbit"><span>MO</span></div><div class="art-caption">Più FLUIDO / SYSTEM CONTROL</div></div></article>
-          <article class="road-card" data-project="2"><div class="project-copy"><div class="project-meta"><span>03</span><span>LOCAL WEB SERVER / PYTHON</span></div><h3>MoliDownloader</h3><p>Ancora in via di sviluppo, vuoi scaricare video/musica sul tuo pc? Perchè usare siti strani se puoi averlo sul tuo pc?</p><div class="project-tags"><span>PYTHON</span><span>HTML / CSS / JS</span><span>LOCAL-FIRST</span></div><a class="project-link" href="https://github.com/Molinays/YT-Dowloader-Local-WebServer" target="_blank" rel="noreferrer">Apri repository <b>↗</b></a></div><div class="project-art art-downloader" aria-hidden="true"><div class="art-grid"></div><div class="download-mark"><svg viewBox="0 0 120 120" fill="none"><circle class="dl-ring" cx="60" cy="60" r="47"/><path class="dl-arrow" d="M60 30v42"/><path class="dl-head" d="M43 57l17 18 17-18"/><path class="dl-tray" d="M36 92h48"/></svg><i class="dl-pulse"></i></div><div class="art-caption">LOCAL MEDIA PIPELINE / 03</div></div></article>
-          <article class="road-card" data-project="3"><div class="project-copy"><div class="project-meta"><span>04</span><span>APP ARCHIVE / PERSONAL</span></div><h3>MoliArchive</h3><p>Il mio archivio personale di versioni modificate di app per esigenze specifiche. Un progetto privato, ospitato sul mio sito.</p><div class="project-tags"><span>APP ARCHIVE</span><span>PERSONAL TOOLING</span><span>PRIVATE</span></div><a class="project-link" href="https://moliarchive.ddns.net/" target="_blank" rel="noreferrer">Visita MoliArchive <b>↗</b></a></div><div class="project-art art-archive" aria-hidden="true"><div class="art-grid"></div><div class="archive-stack"><i></i><i></i><i></i></div><div class="art-caption">PERSONAL SOFTWARE / 03</div></div></article>
+          <article class="road-card" data-project="0"><div class="project-copy"><div class="project-meta"><span>01</span><span>VIDEO / POST-PRODUCTION</span></div><h3>Gaming, cut.</h3><p data-i18n="project.1.desc1">Editing di video gaming long-form o contenuti verticali per YouTube, Instagram, TikTok.</p><p data-i18n="project.1.desc2">Se hai bisogno di un editor, contattami al più presto!</p><div class="project-tags"><span>LONG-FORM</span><span>SHORT-FORM</span><span>GAMING / VLOG</span></div><a class="project-link" href="#contatti"><span data-i18n="project.1.link">Qui non ho ancora nulla..</span> <b>↗</b></a></div><div class="project-art art-edit" aria-hidden="true"><div class="art-grid"></div><div class="cut-timeline"><div class="cut-label" data-i18n="project.1.cutLabel">TIMELINE / SEQUENZA · 24 FPS</div><div class="cut-track one"></div><div class="cut-track two"></div><div class="cut-track three"></div><i class="cut-playhead"></i></div><span class="art-caption" data-i18n="project.1.caption">RENDERIZZA IL MEGLIO</span></div></article>
+          <article class="road-card" data-project="1"><div class="project-copy"><div class="project-meta"><span>02</span><span>WINDOWS / POWERSHELL</span></div><h3>MoliOptimizer</h3><p data-i18n="project.2.desc1">Una toolbox per ottimizzare e personalizzare Windows: tweak reversibili con backup, privacy, servizi, pulizia memoria, scansione PC e oltre 120 app.</p><p data-i18n-html="project.2.desc2">Posso affermare che sia il miglior <b>Ram Cleaner</b> in circolazione.</p><div class="project-tags"><span>POWERSHELL</span><span>WINDOWS 10 / 11</span><span>OPEN SOURCE</span></div><a class="project-link" href="https://github.com/Molinays/MoliOptimizer" target="_blank" rel="noreferrer"><span data-i18n="project.openRepo">Apri repository</span> <b>↗</b></a></div><div class="project-art art-optimizer" aria-hidden="true"><div class="art-grid"></div><div class="art-orbit"><span>MO</span></div><div class="art-caption" data-i18n="project.2.caption">Più FLUIDO / SYSTEM CONTROL</div></div></article>
+          <article class="road-card" data-project="2"><div class="project-copy"><div class="project-meta"><span>03</span><span>LOCAL WEB SERVER / PYTHON</span></div><h3>MoliDownloader</h3><p data-i18n="project.3.desc">Ancora in via di sviluppo, vuoi scaricare video/musica sul tuo pc? Perché usare siti strani se puoi averlo sul tuo pc?</p><div class="project-tags"><span>PYTHON</span><span>HTML / CSS / JS</span><span>LOCAL-FIRST</span></div><a class="project-link" href="https://github.com/Molinays/YT-Dowloader-Local-WebServer" target="_blank" rel="noreferrer"><span data-i18n="project.openRepo">Apri repository</span> <b>↗</b></a></div><div class="project-art art-downloader" aria-hidden="true"><div class="art-grid"></div><div class="download-mark"><svg viewBox="0 0 120 120" fill="none"><circle class="dl-ring" cx="60" cy="60" r="47"/><path class="dl-arrow" d="M60 30v42"/><path class="dl-head" d="M43 57l17 18 17-18"/><path class="dl-tray" d="M36 92h48"/></svg><i class="dl-pulse"></i></div><div class="art-caption">LOCAL MEDIA PIPELINE / 03</div></div></article>
+          <article class="road-card" data-project="3"><div class="project-copy"><div class="project-meta"><span>04</span><span>APP ARCHIVE / PERSONAL</span></div><h3>MoliArchive</h3><p data-i18n="project.4.desc">Il mio archivio personale di versioni modificate di app per esigenze specifiche. Un progetto privato, ospitato sul mio sito.</p><div class="project-tags"><span>APP ARCHIVE</span><span>PERSONAL TOOLING</span><span>PRIVATE</span></div><a class="project-link" href="https://moliarchive.ddns.net/" target="_blank" rel="noreferrer"><span data-i18n="project.visitArchive">Visita MoliArchive</span> <b>↗</b></a></div><div class="project-art art-archive" aria-hidden="true"><div class="art-grid"></div><div class="archive-stack"><i></i><i></i><i></i></div><div class="art-caption">PERSONAL SOFTWARE / 03</div></div></article>
 
         </div>
-        <div class="road-controls"><button class="road-nav" id="road-prev" type="button" aria-label="Progetto precedente"><span aria-hidden="true">←</span></button><div class="road-dots" id="road-dots" role="group" aria-label="Scegli progetto"></div><button class="road-nav" id="road-next" type="button" aria-label="Progetto successivo"><span aria-hidden="true">→</span></button></div>
-        <div class="road-hint"><span>SCORRI, TOCCA LE FRECCE O USA ↑ ↓</span><i></i></div>
+        <div class="road-controls"><button class="road-nav" id="road-prev" type="button" data-i18n-aria-label="projects.prev" aria-label="Progetto precedente"><span aria-hidden="true">←</span></button><div class="road-dots" id="road-dots" role="group" data-i18n-aria-label="projects.dots" aria-label="Scegli progetto"></div><button class="road-nav" id="road-next" type="button" data-i18n-aria-label="projects.next" aria-label="Progetto successivo"><span aria-hidden="true">→</span></button></div>
+        <div class="road-hint"><span data-i18n="projects.hint">SCORRI, TOCCA LE FRECCE O USA ↑ ↓</span><i></i></div>
       </div>
     </section>
-    <section class="wrap journey" id="percorso" aria-label="Percorso">
+    <section class="wrap journey" id="percorso" data-i18n-aria-label="journey.label" aria-label="Percorso">
       <div class="journey-head">
-        <div class="mono section-index">02 / PERCORSO</div>
-        <h2 class="journey-heading">Dalle mod su %appdata%<br><span>a un piccolo ecosistema.</span></h2>
+        <div class="mono section-index" data-i18n="journey.index">02 / PERCORSO</div>
+        <h2 class="journey-heading" data-i18n-html="journey.heading">Dalle mod su %appdata%<br><span>a un piccolo ecosistema.</span></h2>
       </div>
       <ol class="timeline" id="timeline">
-        <li class="timeline-item"><i class="timeline-dot"></i><span class="timeline-step">01</span><h3>Modding e problem solving</h3><p>Sono partito con un semplice microonde spacciato per computer, e da li ho iniziato a sperimentare.</p></li>
-        <li class="timeline-item"><i class="timeline-dot"></i><span class="timeline-step">02</span><h3>Strumenti miei</h3><p>MoliOptimizer e MoliDownloader: tool nati da un'esigenza reale e costruiti da zero.</p></li>
-        <li class="timeline-item"><i class="timeline-dot"></i><span class="timeline-step">03</span><h3>La mia infrastruttura</h3><p>VPS, SSH e self-hosting: i servizi girano su macchine che controllo io.</p></li>
-        <li class="timeline-item"><i class="timeline-dot"></i><span class="timeline-step">04</span><h3>Adesso</h3><p>Archivio personale, video editing e la prossima cosa da smontare.</p></li>
+        <li class="timeline-item"><i class="timeline-dot"></i><span class="timeline-step">01</span><h3 data-i18n="journey.1.title">Modding e problem solving</h3><p data-i18n="journey.1.text">Sono partito con un semplice microonde spacciato per computer, e da lì ho iniziato a sperimentare.</p></li>
+        <li class="timeline-item"><i class="timeline-dot"></i><span class="timeline-step">02</span><h3 data-i18n="journey.2.title">Strumenti miei</h3><p data-i18n="journey.2.text">MoliOptimizer e MoliDownloader: tool nati da un'esigenza reale e costruiti da zero.</p></li>
+        <li class="timeline-item"><i class="timeline-dot"></i><span class="timeline-step">03</span><h3 data-i18n="journey.3.title">La mia infrastruttura</h3><p data-i18n="journey.3.text">VPS, SSH e self-hosting: i servizi girano su macchine che controllo io.</p></li>
+        <li class="timeline-item"><i class="timeline-dot"></i><span class="timeline-step">04</span><h3 data-i18n="journey.4.title">Adesso</h3><p data-i18n="journey.4.text">Archivio personale, video editing e la prossima cosa da smontare.</p></li>
       </ol>
     </section>
-    <section class="wrap life-section" id="oltre"><div class="mono section-index">03 / OLTRE IL CODICE</div><h2 class="life-heading">Mi piace capire come funziona.<br><span>Di solito, smontandolo.</span></h2>
+    <section class="wrap life-section" id="oltre"><div class="mono section-index" data-i18n="beyond.index">03 / OLTRE IL CODICE</div><h2 class="life-heading" data-i18n-html="beyond.heading">Mi piace capire come funziona.<br><span>Di solito, smontandolo.</span></h2>
       <div class="life-grid">
-        <article class="life-card reveal"><canvas class="particle-icon" data-shape="terminal" aria-hidden="true"></canvas><h3>VPS & SSH</h3><p>Gestisco server Linux, lavoro in terminale e mi piace sapere cosa gira sotto al cofano.</p></article>
-        <article class="life-card reveal"><canvas class="particle-icon" data-shape="house" aria-hidden="true"></canvas><h3>Self-hosting</h3><p>Servizi miei, server Minecraft e infrastruttura che controllo direttamente.</p></article>
-        <article class="life-card reveal"><canvas class="particle-icon" data-shape="monitor" aria-hidden="true"></canvas><h3>PC & hardware</h3><p>Riparazioni, componenti, build e curiosità per tutto quello che è fatto di silicio.</p></article>
+        <article class="life-card reveal"><canvas class="particle-icon" data-shape="terminal" aria-hidden="true"></canvas><h3>VPS & SSH</h3><p data-i18n="beyond.1.text">Gestisco server Linux, lavoro in terminale e mi piace sapere cosa gira sotto al cofano.</p></article>
+        <article class="life-card reveal"><canvas class="particle-icon" data-shape="house" aria-hidden="true"></canvas><h3>Self-hosting</h3><p data-i18n="beyond.2.text">Servizi miei, server Minecraft e infrastruttura che controllo direttamente.</p></article>
+        <article class="life-card reveal"><canvas class="particle-icon" data-shape="monitor" aria-hidden="true"></canvas><h3>PC & hardware</h3><p data-i18n="beyond.3.text">Riparazioni, componenti, build e curiosità per tutto quello che è fatto di silicio.</p></article>
       </div>
     </section>
     <section class="wrap contact" id="contatti">
       <div class="contact-copy">
-        <div class="mono section-index">04 / CONTATTI</div>
-        <h2>Hai un progetto, una build o un video?</h2>
-        <p>Scrivimi da qui: il messaggio arriva dritto a me. Oppure contattami su discord.</p>
+        <div class="mono section-index" data-i18n="contact.index">04 / CONTATTI</div>
+        <h2 data-i18n="contact.title">Hai un progetto, una build o un video?</h2>
+        <p data-i18n="contact.desc">Scrivimi da qui: il messaggio arriva dritto a me. Oppure contattami su discord.</p>
         <div class="contact-links"><a href="https://github.com/Molinays" target="_blank" rel="noreferrer">GITHUB ↗</a><a href="https://discord.com/users/958753896346566696" target="_blank" rel="noreferrer">DISCORD ↗</a><a href="https://moliarchive.ddns.net/" target="_blank" rel="noreferrer">ARCHIVE ↗</a></div>
       </div>
       <form class="contact-form" id="contact-form" data-access-key="08859a95-30ae-4848-93eb-1479412f52a8" data-fallback-email="" novalidate>
         <div class="field-row">
-          <label class="field"><span>Nome</span><input id="contact-name" name="name" type="text" autocomplete="name" placeholder="Come ti chiami" required></label>
-          <label class="field"><span>Email</span><input id="contact-email" name="email" type="email" autocomplete="email" placeholder="nome@dominio.it" required></label>
+          <label class="field"><span data-i18n="contact.name">Nome</span><input id="contact-name" name="name" type="text" autocomplete="name" data-i18n-placeholder="contact.namePlaceholder" placeholder="Come ti chiami" required></label>
+          <label class="field"><span>Email</span><input id="contact-email" name="email" type="email" autocomplete="email" data-i18n-placeholder="contact.emailPlaceholder" placeholder="nome@dominio.it" required></label>
         </div>
-        <label class="field"><span>Messaggio</span><textarea id="contact-message" name="message" rows="5" placeholder="Raccontami cosa hai in mente" required></textarea></label>
+        <label class="field"><span data-i18n="contact.message">Messaggio</span><textarea id="contact-message" name="message" rows="5" data-i18n-placeholder="contact.messagePlaceholder" placeholder="Raccontami cosa hai in mente" required></textarea></label>
         <input class="contact-honey" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="contact-actions">
-          <button class="button contact-send" id="contact-send" type="submit">Invia messaggio <span aria-hidden="true">↗</span></button>
+          <button class="button contact-send" id="contact-send" type="submit"><span data-i18n="contact.send">Invia messaggio</span> <span aria-hidden="true">↗</span></button>
           <p class="contact-status" id="contact-status" role="status" aria-live="polite"></p>
         </div>
       </form>
     </section>
   </main>
-  <footer class="wrap footer"><span>MOLINAYS.</span><button id="terminal-launch" type="button">[ apri terminale ]</button><a href="#top">TORNA SU ↑</a></footer>
-  <dialog class="terminal" id="terminal" aria-label="Terminale Arch interattivo">
-    <div class="terminal-bar"><button class="terminal-close" id="terminal-close" type="button" aria-label="Chiudi terminale"><span aria-hidden="true"></span></button><span class="terminal-title">root@molios: ~</span></div>
+  <footer class="wrap footer"><span data-i18n="footer.copy">© 2026 Molinays. Tutti i diritti riservati.</span><button id="terminal-launch" type="button" data-i18n="footer.terminal">[ apri terminale ]</button><a href="#top" data-i18n="footer.top">TORNA SU ↑</a></footer>
+  <dialog class="terminal" id="terminal" data-i18n-aria-label="terminal.label" aria-label="Terminale Arch interattivo">
+    <div class="terminal-bar"><button class="terminal-close" id="terminal-close" type="button" data-i18n-aria-label="terminal.close" aria-label="Chiudi terminale"><span aria-hidden="true"></span></button><span class="terminal-title">root@molios: ~</span></div>
     <div class="terminal-output" id="terminal-output" aria-live="polite"></div>
-    <form class="terminal-form" id="terminal-form"><label for="terminal-input"><span>root@molios</span> <b>~</b> $</label><input id="terminal-input" autocomplete="off" spellcheck="false" aria-label="Comando terminale"></form>
+    <form class="terminal-form" id="terminal-form"><label for="terminal-input"><span>root@molios</span> <b>~</b> $</label><input id="terminal-input" autocomplete="off" spellcheck="false" data-i18n-aria-label="terminal.input" aria-label="Comando terminale"></form>
   </dialog>
 </body>
 </html>

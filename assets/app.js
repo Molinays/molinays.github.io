@@ -1,16 +1,393 @@
 const DISCORD_ID = '958753896346566696';
 const byId = (id) => document.getElementById(id);
-const statusNames = {online:'Online',idle:'Inattivo',dnd:'Non disturbare',offline:'Offline'};
+
+/* --- lingua: tutte le stringhe del sito vivono qui (it + en) --- */
+const translations = {
+  it: {
+    'meta.description': 'Molinays — progetti, server, hardware e video editing.',
+    'nav.label': 'Navigazione',
+    'nav.projects': 'Progetti',
+    'nav.journey': 'Percorso',
+    'nav.beyond': 'Oltre il codice',
+    'nav.contact': 'Contatti',
+    'hero.label': 'Presentazione',
+    'hero.eyebrow': 'Avevo voglia di fare un Portfolio',
+    'hero.desc': 'Tra <b>codice, server e hardware</b>. 18 y/o Developer ed Editor, adoro usare i computer, quindi perché non farlo?.',
+    'hero.cta': 'Esplora i progetti',
+    'hero.scroll': 'SCORRI PER ESPLORARE',
+    'hero.note': 'I progetti sono animati eh',
+    'discord.label': 'Profilo Discord live tramite Lanyard',
+    'discord.avatarAlt': 'Avatar Discord',
+    'discord.connecting': 'Connessione',
+    'discord.stateConnecting': 'Connessione a Lanyard',
+    'discord.activityTitle': 'Presenza Discord',
+    'discord.activitySub': 'Attività e musica, se condivise',
+    'discord.cta': 'Contattami su Discord',
+    'discord.open': 'APRI PROFILO ↗',
+    'tech.label': 'Puoi chiamarmi per',
+    'projects.label': 'Portfolio progetti: scorri per avanzare',
+    'projects.title': 'I miei progetti',
+    'projects.prev': 'Progetto precedente',
+    'projects.next': 'Progetto successivo',
+    'projects.dots': 'Scegli progetto',
+    'projects.goTo': 'Vai al progetto {n}',
+    'projects.hint': 'SCORRI, TOCCA LE FRECCE O USA ↑ ↓',
+    'project.1.desc1': 'Editing di video gaming long-form o contenuti verticali per YouTube, Instagram, TikTok.',
+    'project.1.desc2': 'Se hai bisogno di un editor, contattami al più presto!',
+    'project.1.link': 'Qui non ho ancora nulla..',
+    'project.1.cutLabel': 'TIMELINE / SEQUENZA · 24 FPS',
+    'project.1.caption': 'RENDERIZZA IL MEGLIO',
+    'project.2.desc1': 'Una toolbox per ottimizzare e personalizzare Windows: tweak reversibili con backup, privacy, servizi, pulizia memoria, scansione PC e oltre 120 app.',
+    'project.2.desc2': 'Posso affermare che sia il miglior <b>Ram Cleaner</b> in circolazione.',
+    'project.2.caption': 'Più FLUIDO / SYSTEM CONTROL',
+    'project.3.desc': 'Ancora in via di sviluppo, vuoi scaricare video/musica sul tuo pc? Perché usare siti strani se puoi averlo sul tuo pc?',
+    'project.4.desc': 'Il mio archivio personale di versioni modificate di app per esigenze specifiche. Un progetto privato, ospitato sul mio sito.',
+    'project.openRepo': 'Apri repository',
+    'project.visitArchive': 'Visita MoliArchive',
+    'journey.label': 'Percorso',
+    'journey.index': '02 / PERCORSO',
+    'journey.heading': 'Dalle mod su %appdata%<br><span>a un piccolo ecosistema.</span>',
+    'journey.1.title': 'Modding e problem solving',
+    'journey.1.text': 'Sono partito con un semplice microonde spacciato per computer, e da lì ho iniziato a sperimentare.',
+    'journey.2.title': 'Strumenti miei',
+    'journey.2.text': "MoliOptimizer e MoliDownloader: tool nati da un'esigenza reale e costruiti da zero.",
+    'journey.3.title': 'La mia infrastruttura',
+    'journey.3.text': 'VPS, SSH e self-hosting: i servizi girano su macchine che controllo io.',
+    'journey.4.title': 'Adesso',
+    'journey.4.text': 'Archivio personale, video editing e la prossima cosa da smontare.',
+    'beyond.index': '03 / OLTRE IL CODICE',
+    'beyond.heading': 'Mi piace capire come funziona.<br><span>Di solito, smontandolo.</span>',
+    'beyond.1.text': 'Gestisco server Linux, lavoro in terminale e mi piace sapere cosa gira sotto al cofano.',
+    'beyond.2.text': 'Servizi miei, server Minecraft e infrastruttura che controllo direttamente.',
+    'beyond.3.text': 'Riparazioni, componenti, build e curiosità per tutto quello che è fatto di silicio.',
+    'contact.index': '04 / CONTATTI',
+    'contact.title': 'Hai un progetto, una build o un video?',
+    'contact.desc': 'Scrivimi da qui: il messaggio arriva dritto a me. Oppure contattami su discord.',
+    'contact.name': 'Nome',
+    'contact.message': 'Messaggio',
+    'contact.namePlaceholder': 'Come ti chiami',
+    'contact.emailPlaceholder': 'nome@dominio.it',
+    'contact.messagePlaceholder': 'Raccontami cosa hai in mente',
+    'contact.send': 'Invia messaggio',
+    'contact.mailSubject': 'Messaggio dal sito - {name}',
+    'contact.newSubject': 'Nuovo messaggio dal sito - {name}',
+    'contact.mailOpened': 'Apro il tuo client di posta con il messaggio già scritto.',
+    'contact.checkFields': 'Controlla i campi evidenziati.',
+    'contact.sent': 'Messaggio inviato.',
+    'contact.notConnected': 'Form non ancora collegato: manca la chiave di invio. Scrivimi su Discord o GitHub.',
+    'contact.sending': 'Invio in corso...',
+    'contact.sentReply': 'Messaggio inviato. Ti rispondo il prima possibile.',
+    'contact.tooMany': 'Troppi messaggi in poco tempo: riprova tra un minuto.',
+    'contact.badData': 'Controlla i dati inseriti e riprova.',
+    'contact.failed': 'Invio non riuscito, riprova tra poco.',
+    'contact.network': 'Rete non raggiungibile: riprova o scrivimi su Discord.',
+    'footer.copy': '© 2026 Molinays. Tutti i diritti riservati.',
+    'footer.terminal': '[ apri terminale ]',
+    'footer.top': 'TORNA SU ↑',
+    'terminal.label': 'Terminale Arch interattivo',
+    'terminal.close': 'Chiudi terminale',
+    'terminal.input': 'Comando terminale',
+    'terminal.intro2': 'Digita "help" per vedere i comandi.',
+    'terminal.help.title': 'Comandi disponibili:',
+    'terminal.help.help': 'help                 mostra i comandi',
+    'terminal.help.whoami': 'whoami               presenta il profilo',
+    'terminal.help.projects': 'projects             elenca i progetti',
+    'terminal.help.theme': 'sudo theme <colore>  blue, green, purple, red, amber, yellow, pink, cyan, reset',
+    'terminal.help.clear': 'clear                pulisce il terminale',
+    'terminal.help.exit': 'exit                 chiude il terminale',
+    'terminal.whoami': 'Molinays — dev, self-hosting, hardware e video editing dal 2024.',
+    'terminal.projects': 'MoliOptimizer · MoliDownloader · MoliArchive · Gaming, cut.',
+    'terminal.themeDefault': 'Scaricando tema default...',
+    'terminal.themeNotFound': 'Tema non trovato. Scegli: {list}',
+    'terminal.themeDownloading': 'Scaricando tema {name}...',
+    'terminal.commandNotFound': 'zsh: comando non trovato: {name} (prova "help")',
+    'terminal.downloadingTheme': 'scaricando tema',
+    'presence.online': 'Online',
+    'presence.idle': 'Inattivo',
+    'presence.dnd': 'Non disturbare',
+    'presence.offline': 'Offline',
+    'presence.unavailable': 'Non disponibile',
+    'presence.unreachable': 'Presenza non raggiungibile',
+    'presence.listening': 'In ascolto',
+    'presence.byArtist': 'di {artist}',
+    'presence.activityDiscord': 'Attività Discord',
+    'presence.activityOngoing': 'Attività in corso',
+    'presence.noActivity': 'Nessuna attività condivisa',
+    'presence.nothingNow': 'Niente al momento',
+    'lang.switchToEnglish': "Passa all'inglese",
+    'lang.switchToItalian': "Passa all'italiano",
+    'lang.announce': 'Lingua: italiano'
+  },
+  en: {
+    'meta.description': 'Molinays — projects, servers, hardware and video editing.',
+    'nav.label': 'Navigation',
+    'nav.projects': 'Projects',
+    'nav.journey': 'Journey',
+    'nav.beyond': 'Beyond code',
+    'nav.contact': 'Contact',
+    'hero.label': 'Introduction',
+    'hero.eyebrow': 'I felt like making a portfolio',
+    'hero.desc': 'Somewhere between <b>code, servers and hardware</b>. 18 y/o developer and editor, I love using computers — so why not make it my thing?',
+    'hero.cta': 'Explore the projects',
+    'hero.scroll': 'SCROLL TO EXPLORE',
+    'hero.note': 'The projects are animated, you know',
+    'discord.label': 'Live Discord profile powered by Lanyard',
+    'discord.avatarAlt': 'Discord avatar',
+    'discord.connecting': 'Connecting',
+    'discord.stateConnecting': 'Connecting to Lanyard',
+    'discord.activityTitle': 'Discord presence',
+    'discord.activitySub': 'Activity and music, when shared',
+    'discord.cta': 'Reach me on Discord',
+    'discord.open': 'OPEN PROFILE ↗',
+    'tech.label': 'You can call me for',
+    'projects.label': 'Project portfolio: scroll to advance',
+    'projects.title': 'My projects',
+    'projects.prev': 'Previous project',
+    'projects.next': 'Next project',
+    'projects.dots': 'Choose a project',
+    'projects.goTo': 'Go to project {n}',
+    'projects.hint': 'SCROLL, TAP THE ARROWS OR USE ↑ ↓',
+    'project.1.desc1': 'Editing long-form gaming videos or vertical content for YouTube, Instagram, TikTok.',
+    'project.1.desc2': 'If you need an editor, get in touch as soon as you can!',
+    'project.1.link': 'Nothing here just yet..',
+    'project.1.cutLabel': 'TIMELINE / SEQUENCE · 24 FPS',
+    'project.1.caption': 'RENDER YOUR BEST',
+    'project.2.desc1': 'A toolbox to optimize and customize Windows: reversible tweaks with backups, privacy, services, memory cleanup, PC scanning and 120+ apps.',
+    'project.2.desc2': 'I can safely say it is the best <b>RAM cleaner</b> around.',
+    'project.2.caption': 'SMOOTHER / SYSTEM CONTROL',
+    'project.3.desc': 'Still in development. Want to download videos and music to your PC? Why use sketchy sites when you can have it on your own machine?',
+    'project.4.desc': 'My personal archive of modified app versions for specific needs. A private project, hosted on my own site.',
+    'project.openRepo': 'Open repository',
+    'project.visitArchive': 'Visit MoliArchive',
+    'journey.label': 'Journey',
+    'journey.index': '02 / JOURNEY',
+    'journey.heading': 'From mods in %appdata%<br><span>to a small ecosystem.</span>',
+    'journey.1.title': 'Modding and problem solving',
+    'journey.1.text': 'I started with a humble microwave pretending to be a computer, and that is where I began experimenting.',
+    'journey.2.title': 'Tools of my own',
+    'journey.2.text': 'MoliOptimizer and MoliDownloader: tools born from a real need and built from scratch.',
+    'journey.3.title': 'My infrastructure',
+    'journey.3.text': 'VPS, SSH and self-hosting: services run on machines I control.',
+    'journey.4.title': 'Now',
+    'journey.4.text': 'A personal archive, video editing and the next thing to take apart.',
+    'beyond.index': '03 / BEYOND CODE',
+    'beyond.heading': 'I like understanding how things work.<br><span>Usually by taking them apart.</span>',
+    'beyond.1.text': 'I run Linux servers, work in the terminal and like knowing what runs under the hood.',
+    'beyond.2.text': 'My own services, Minecraft servers and infrastructure I control directly.',
+    'beyond.3.text': 'Repairs, components, builds and curiosity for everything made of silicon.',
+    'contact.index': '04 / CONTACT',
+    'contact.title': 'Got a project, a build or a video?',
+    'contact.desc': 'Write to me here: your message comes straight to me. Or reach out on Discord.',
+    'contact.name': 'Name',
+    'contact.message': 'Message',
+    'contact.namePlaceholder': "What's your name",
+    'contact.emailPlaceholder': 'name@domain.com',
+    'contact.messagePlaceholder': 'Tell me what you have in mind',
+    'contact.send': 'Send message',
+    'contact.mailSubject': 'Message from the site - {name}',
+    'contact.newSubject': 'New message from the site - {name}',
+    'contact.mailOpened': 'Opening your mail app with the message already written.',
+    'contact.checkFields': 'Check the highlighted fields.',
+    'contact.sent': 'Message sent.',
+    'contact.notConnected': "The form isn't connected yet: the sending key is missing. Message me on Discord or GitHub.",
+    'contact.sending': 'Sending...',
+    'contact.sentReply': "Message sent. I'll reply as soon as I can.",
+    'contact.tooMany': 'Too many messages in a short time: try again in a minute.',
+    'contact.badData': 'Check the details you entered and try again.',
+    'contact.failed': 'Sending failed, please try again soon.',
+    'contact.network': 'Network unreachable: try again or message me on Discord.',
+    'footer.copy': '© 2026 Molinays. All rights reserved.',
+    'footer.terminal': '[ open terminal ]',
+    'footer.top': 'BACK TO TOP ↑',
+    'terminal.label': 'Interactive Arch terminal',
+    'terminal.close': 'Close terminal',
+    'terminal.input': 'Terminal command',
+    'terminal.intro2': 'Type "help" to list the commands.',
+    'terminal.help.title': 'Available commands:',
+    'terminal.help.help': 'help                 show the commands',
+    'terminal.help.whoami': 'whoami               introduce the profile',
+    'terminal.help.projects': 'projects             list the projects',
+    'terminal.help.theme': 'sudo theme <color>   blue, green, purple, red, amber, yellow, pink, cyan, reset',
+    'terminal.help.clear': 'clear                clear the terminal',
+    'terminal.help.exit': 'exit                 close the terminal',
+    'terminal.whoami': 'Molinays — dev, self-hosting, hardware and video editing since 2024.',
+    'terminal.projects': 'MoliOptimizer · MoliDownloader · MoliArchive · Gaming, cut.',
+    'terminal.themeDefault': 'Downloading default theme...',
+    'terminal.themeNotFound': 'Theme not found. Choose: {list}',
+    'terminal.themeDownloading': 'Downloading {name} theme...',
+    'terminal.commandNotFound': 'zsh: command not found: {name} (try "help")',
+    'terminal.downloadingTheme': 'downloading theme',
+    'presence.online': 'Online',
+    'presence.idle': 'Idle',
+    'presence.dnd': 'Do not disturb',
+    'presence.offline': 'Offline',
+    'presence.unavailable': 'Unavailable',
+    'presence.unreachable': 'Presence unreachable',
+    'presence.listening': 'Listening to',
+    'presence.byArtist': 'by {artist}',
+    'presence.activityDiscord': 'Discord activity',
+    'presence.activityOngoing': 'Activity in progress',
+    'presence.noActivity': 'No shared activity',
+    'presence.nothingNow': 'Nothing right now',
+    'lang.switchToEnglish': 'Switch to English',
+    'lang.switchToItalian': 'Switch to Italian',
+    'lang.announce': 'Language: English'
+  }
+};
+
+const LANGUAGE_STORAGE_KEY = 'molinays-language';
+const languageListeners = [];
+let currentLanguage = 'it';
+try {
+  const savedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  if (savedLanguage === 'it' || savedLanguage === 'en') currentLanguage = savedLanguage;
+} catch {}
+
+function t(key, vars) {
+  const table = translations[currentLanguage] || translations.it;
+  let value = table[key];
+  if (value === undefined) value = translations.it[key];
+  if (value === undefined) value = key;
+  if (vars) {
+    for (const [name, replacement] of Object.entries(vars)) value = value.split(`{${name}}`).join(String(replacement));
+  }
+  return value;
+}
+
+function onLanguageChange(listener) {
+  languageListeners.push(listener);
+}
+
+function statusLabel(status) {
+  return t(`presence.${status}` in translations.it ? `presence.${status}` : 'presence.offline');
+}
+
+function applyTranslations() {
+  document.documentElement.lang = currentLanguage;
+  document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = t(element.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach((element) => { element.innerHTML = t(element.dataset.i18nHtml); });
+  document.querySelectorAll('[data-i18n-aria-label]').forEach((element) => { element.setAttribute('aria-label', t(element.dataset.i18nAriaLabel)); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((element) => { element.setAttribute('placeholder', t(element.dataset.i18nPlaceholder)); });
+  document.querySelectorAll('[data-i18n-alt]').forEach((element) => { element.setAttribute('alt', t(element.dataset.i18nAlt)); });
+  document.querySelectorAll('[data-i18n-content]').forEach((element) => { element.setAttribute('content', t(element.dataset.i18nContent)); });
+  const toggle = byId('lang-toggle');
+  if (toggle) {
+    const next = currentLanguage === 'it' ? 'en' : 'it';
+    byId('lang-current').textContent = currentLanguage.toUpperCase();
+    byId('lang-next').textContent = next.toUpperCase();
+    const label = t(next === 'en' ? 'lang.switchToEnglish' : 'lang.switchToItalian');
+    toggle.setAttribute('aria-label', label);
+    toggle.setAttribute('title', label);
+    toggle.dataset.lang = currentLanguage;
+  }
+}
+
+function setLanguage(next) {
+  currentLanguage = next === 'en' ? 'en' : 'it';
+  try { localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage); } catch {}
+  applyTranslations();
+  languageListeners.forEach((listener) => { try { listener(currentLanguage); } catch {} });
+}
+
+function announceLanguage() {
+  const live = byId('lang-status');
+  if (live) live.textContent = t('lang.announce');
+}
+
+function setupLanguage() {
+  applyTranslations();
+  const toggle = byId('lang-toggle');
+  if (!toggle) return;
+  let swapping = false;
+  toggle.addEventListener('click', () => {
+    if (swapping) return;
+    const next = currentLanguage === 'it' ? 'en' : 'it';
+    swapping = true;
+    toggle.disabled = true;
+    toggle.classList.add('is-switching');
+    // nessuna animazione di pagina: la schermata di boot copre tutto e la lingua cambia dietro
+    playBootSequence({
+      duration: 780,
+      coverAt: 300,
+      onCover: () => {
+        setLanguage(next);
+        announceLanguage();
+      }
+    }).then(() => {
+      swapping = false;
+      toggle.disabled = false;
+      toggle.classList.remove('is-switching');
+    });
+  });
+}
+
+// riproduce la schermata di caricamento iniziale (barra + percentuale)
+function playBootSequence({ duration = 780, coverAt = 300, onCover } = {}) {
+  const boot = byId('boot');
+  if (!boot) {
+    if (onCover) onCover();
+    return Promise.resolve();
+  }
+  const fill = byId('boot-fill');
+  const readout = byId('boot-value');
+  // dal secondo giro il fallback CSS non serve: la visibilità la comandiamo noi
+  boot.style.animation = 'none';
+  boot.style.transition = 'none';
+  boot.classList.remove('is-done');
+  fill.style.transform = 'scaleX(0)';
+  readout.textContent = '000%';
+  void boot.offsetWidth;
+  boot.style.transition = '';
+  return new Promise((resolve) => {
+    const started = performance.now();
+    let covered = false;
+    let finished = false;
+    const cover = () => {
+      if (covered) return;
+      covered = true;
+      if (onCover) onCover();
+    };
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      cover();
+      boot.classList.add('is-done');
+      resolve();
+    };
+    const tick = (now) => {
+      const progress = Math.min(1, (now - started) / duration);
+      fill.style.transform = `scaleX(${progress})`;
+      readout.textContent = `${String(Math.round(progress * 100)).padStart(3, '0')}%`;
+      if (progress >= coverAt / duration) cover();
+      if (progress < 1) requestAnimationFrame(tick);
+      else finish();
+    };
+    requestAnimationFrame(tick);
+    // rete di sicurezza: se i frame non girano, la schermata non resta bloccata
+    setTimeout(finish, duration + 700);
+  });
+}
+
+let lastPresence = null;
+let presenceFailed = false;
+
+function markPresenceUnavailable() {
+  presenceFailed = true;
+  byId('presence-text').textContent = t('presence.unavailable');
+  byId('discord-state').textContent = t('presence.unreachable');
+}
 
 function renderPresence(presence) {
   if (!presence?.discord_user) return;
+  lastPresence = presence;
+  presenceFailed = false;
   const user = presence.discord_user;
   const status = presence.discord_status || 'offline';
   byId('discord-name').textContent = user.global_name || user.username || 'Molinays';
   byId('discord-handle').textContent = `@${user.username || 'molinays'}`;
-  byId('discord-state').textContent = statusNames[status] || status;
-  byId('presence-text').textContent = statusNames[status] || status;
-  byId('nav-presence').textContent = (statusNames[status] || status).toUpperCase();
+  byId('discord-state').textContent = statusLabel(status);
+  byId('presence-text').textContent = statusLabel(status);
+  byId('nav-presence').textContent = statusLabel(status).toUpperCase();
   byId('presence-dot').className = `presence-dot ${status}`;
   byId('avatar-dot').className = `avatar-dot ${status}`;
   if (user.avatar) {
@@ -22,18 +399,23 @@ function renderPresence(presence) {
   if (spotify) {
     byId('activity-icon').textContent = '♪';
     byId('activity-title').textContent = spotify.song || 'Spotify';
-    byId('activity-sub').textContent = spotify.artist ? `di ${spotify.artist}` : 'In ascolto';
+    byId('activity-sub').textContent = spotify.artist ? t('presence.byArtist', {artist: spotify.artist}) : t('presence.listening');
     if (spotify.album_art_url) byId('activity-icon').style.background = `center / cover url("${spotify.album_art_url}")`;
   } else if (game) {
     byId('activity-icon').textContent = '>'; byId('activity-icon').style.background = '';
-    byId('activity-title').textContent = game.name || 'Attività Discord';
-    byId('activity-sub').textContent = game.details || game.state || 'Attività in corso';
+    byId('activity-title').textContent = game.name || t('presence.activityDiscord');
+    byId('activity-sub').textContent = game.details || game.state || t('presence.activityOngoing');
   } else {
     byId('activity-icon').textContent = 'X'; byId('activity-icon').style.background = '';
-    byId('activity-title').textContent = 'Nessuna attività condivisa';
-    byId('activity-sub').textContent = 'Niente al momento';
+    byId('activity-title').textContent = t('presence.noActivity');
+    byId('activity-sub').textContent = t('presence.nothingNow');
   }
 }
+
+onLanguageChange(() => {
+  if (lastPresence) renderPresence(lastPresence);
+  else if (presenceFailed) markPresenceUnavailable();
+});
 
 async function loadPresence() {
   try {
@@ -42,8 +424,7 @@ async function loadPresence() {
     const result = await response.json();
     if (result.success) renderPresence(result.data);
   } catch {
-    byId('presence-text').textContent = 'Non disponibile';
-    byId('discord-state').textContent = 'Presenza non raggiungibile';
+    markPresenceUnavailable();
   }
 }
 
@@ -144,58 +525,56 @@ function setupRoad() {
   const total = cards.length;
   byId('road-total').textContent = String(total).padStart(2, '0');
 
-  const easeInOut = (value) => value < .5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2;
-  const easeOut = (value) => 1 - Math.pow(1 - value, 3);
-  const states = cards.map(() => null);
   const jumpers = cards.map((card, i) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'road-jump';
     button.textContent = String(i + 1).padStart(2, '0');
-    button.setAttribute('aria-label', `Vai al progetto ${String(i + 1).padStart(2, '0')}`);
-    button.addEventListener('click', () => goToIndex(i));
+    button.addEventListener('click', () => scrollToIndex(i));
     dotsWrap.append(button);
     return button;
   });
+  const labelJumps = () => jumpers.forEach((button, i) => button.setAttribute('aria-label', t('projects.goTo', { n: String(i + 1).padStart(2, '0') })));
+  labelJumps();
+  onLanguageChange(labelJumps);
+
+  const states = cards.map(() => null);
+  const easeOut = (value) => 1 - Math.pow(1 - value, 3);
   let index = 0;
-  let target = 0;
   let position = 0;
-  let animating = false;
-  let snapping = false;
+  let target = 0;
+  let tweenId = 0;
   let stageHeight = innerHeight;
   let heights = [];
-  let lastWheel = -1e4;
-  let lastDirection = 1;
-  let wheelAccum = 0;
-  let wheelOpen = true;
-  let idleTimer = 0;
-  let touchStartY = null;
-  let touchConsumed = false;
-  let lastTouchEnd = -1e4;
+  let cardStep = 30;
+  let scrollStep = 0;
 
   function measure() {
-    stageHeight = stage.clientHeight || innerHeight;
+    stageHeight = stage.offsetHeight || innerHeight;
     heights = cards.map((card) => card.offsetHeight || 440);
+    cardStep = Math.max(22, Math.min(46, stageHeight * .048));
+    scrollStep = Math.max(380, Math.min(Math.round(innerHeight * .85), 760));
+    // una viewport di stage + una porzione di scroll per ogni card
+    road.style.height = `${Math.round(stageHeight + scrollStep * (total - 1))}px`;
   }
 
   function render() {
     const focusY = stageHeight * .58;
-    const step = Math.max(22, Math.min(46, stageHeight * .048));
     const baseHeight = Math.max(...heights, 440);
+    const active = Math.max(0, Math.min(total - 1, Math.round(position)));
     cards.forEach((card, i) => {
       const offset = i - position;
       const ahead = Math.max(0, offset);
       const behind = Math.max(0, -offset);
       const height = heights[i] || baseHeight;
       const scale = offset >= 0 ? Math.max(.5, Math.pow(.9, ahead)) : 1 - Math.min(1.2, behind) * .06;
-      const shift = offset >= 0 ? -ahead * step : Math.min(1.2, behind) * 110;
+      const shift = offset >= 0 ? -ahead * cardStep : Math.min(1.2, behind) * 110;
       const distance = Math.abs(offset);
-      const backwards = target < index;
       const opacity = offset >= 0
         ? Math.max(.3, Math.pow(.82, Math.max(0, ahead - .45)))
-        : Math.max(0, 1 - distance * (backwards ? 1.15 : 2.6));
+        : Math.max(0, 1 - Math.pow(behind, 2) * 1.6);
       const center = focusY + shift;
-      const reachable = Math.abs(offset) < .3;
+      const reachable = i === active;
       card.style.setProperty('--card-y', `${(center - height / 2).toFixed(1)}px`);
       card.style.setProperty('--card-scale', scale.toFixed(3));
       card.style.setProperty('--card-opacity', opacity.toFixed(3));
@@ -207,197 +586,94 @@ function setupRoad() {
         card.setAttribute('aria-hidden', String(!reachable));
       }
     });
-    counter.textContent = String(index + 1).padStart(2, '0');
+    counter.textContent = String(active + 1).padStart(2, '0');
     jumpers.forEach((button, i) => {
-      button.classList.toggle('is-active', i === index);
-      button.setAttribute('aria-current', i === index ? 'true' : 'false');
+      button.classList.toggle('is-active', i === active);
+      button.setAttribute('aria-current', i === active ? 'true' : 'false');
     });
-    prevButton.disabled = animating || index === 0;
-    nextButton.disabled = animating || index === total - 1;
-    controls.classList.toggle('is-busy', animating);
+    prevButton.disabled = active === 0;
+    nextButton.disabled = active === total - 1;
+    controls.classList.remove('is-busy');
+    index = active;
   }
 
-  function stageRect() {
-    return stage.getBoundingClientRect();
-  }
-
-  function aligned() {
-    const top = stageRect().top;
-    return top > -3 && top < 3;
-  }
-
-  function snapIntoView() {
-    if (snapping) return;
-    snapping = true;
-    const from = scrollY;
-    const distance = road.getBoundingClientRect().top;
-    const duration = Math.min(520, Math.max(240, Math.abs(distance) * .75));
-    const started = performance.now();
-    function step(now) {
-      const progress = Math.min(1, (now - started) / duration);
-      scrollTo(0, from + distance * easeInOut(progress));
-      if (progress < 1) {
-        requestAnimationFrame(step);
-        return;
-      }
-      snapping = false;
+  // breve assestamento sulla card più vicina: niente scatti e nessuno blocco dello scroll
+  function tweenTo(next) {
+    if (tweenId) {
+      cancelAnimationFrame(tweenId);
+      tweenId = 0;
     }
-    requestAnimationFrame(step);
-  }
-
-  function settle() {
-    if (animating || snapping || aligned()) return;
-    const rect = stageRect();
-    if (rect.top >= 0) return;
-    const seen = Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0);
-    if (seen < innerHeight * .6) return;
-    if (lastDirection > 0 && index === total - 1) return;
-    snapIntoView();
-  }
-
-  function goTo(next) {
     const from = position;
-    const duration = Math.min(1500, 700 + Math.abs(next - from) * 320);
+    const duration = Math.max(240, Math.min(520, 240 + Math.abs(next - from) * 150));
     const started = performance.now();
-    animating = true;
-    target = next;
-    function frame(now) {
+    const frame = (now) => {
       const progress = Math.min(1, (now - started) / duration);
       position = from + (next - from) * easeOut(progress);
       render();
       if (progress < 1) {
-        requestAnimationFrame(frame);
+        tweenId = requestAnimationFrame(frame);
         return;
       }
       position = next;
-      index = next;
-      target = next;
-      animating = false;
+      tweenId = 0;
       render();
-    }
-    requestAnimationFrame(frame);
+    };
+    tweenId = requestAnimationFrame(frame);
   }
 
-  function go(direction) {
-    if (animating) return 'busy';
-    const next = index + direction;
-    if (next < 0 || next > total - 1) return 'edge';
-    goTo(next);
-    return 'moved';
-  }
-
-  function goToIndex(target) {
-    if (animating) return;
-    if (target < 0 || target > total - 1 || target === index) return;
-    goTo(target);
-  }
-
-  prevButton.addEventListener('click', () => go(-1));
-  nextButton.addEventListener('click', () => go(1));
-
-  stage.addEventListener('wheel', (event) => {
-    const rect = stageRect();
-    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1);
-    if (!delta) return;
-    const direction = delta > 0 ? 1 : -1;
-    const now = performance.now();
-    lastDirection = direction;
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(settle, 240);
-
-    if (rect.top > 3 || rect.top < -3) {
-      const seen = Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0);
-      if (seen < innerHeight * .5) return;
-      const towards = direction > 0 ? rect.top > 0 : rect.top < 0;
-      if (!towards) return;
-      event.preventDefault();
-      snapIntoView();
-      return;
-    }
-
-    const next = index + direction;
-    if (next < 0 || next > total - 1) return;
-
-    event.preventDefault();
-    if (now - lastWheel > 260) {
-      wheelAccum = 0;
-      wheelOpen = true;
-    }
-    lastWheel = now;
-    if (animating || snapping || !wheelOpen) return;
-    wheelAccum += delta;
-    if (Math.abs(wheelAccum) < 24) return;
-    wheelAccum = 0;
-    wheelOpen = false;
-    go(direction);
-  }, { passive: false });
-
-  stage.addEventListener('touchstart', (event) => {
-    touchStartY = event.touches[0].clientY;
-    touchConsumed = false;
-    wheelOpen = performance.now() - lastTouchEnd > 260;
-  }, { passive: true });
-
-  stage.addEventListener('touchmove', (event) => {
-    if (touchStartY === null) return;
-    const rect = stageRect();
-    const delta = touchStartY - event.touches[0].clientY;
-    const direction = delta > 0 ? 1 : -1;
-    lastDirection = direction;
-
-    if (!aligned()) {
-      const seen = Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0);
-      if (seen < innerHeight * .5) return;
-      const towards = direction > 0 ? rect.top > 0 : rect.top < 0;
-      if (!towards) return;
-      event.preventDefault();
-      if (!touchConsumed) {
-        touchConsumed = true;
-        snapIntoView();
+  // lo scroll nativo decide la card attiva: nessun blocco, nessuno snap forzato
+  function update(force) {
+    const rect = road.getBoundingClientRect();
+    const scrollable = Math.max(1, road.offsetHeight - stageHeight);
+    const raw = Math.max(0, Math.min(1, -rect.top / scrollable)) * (total - 1);
+    const desired = Math.max(0, Math.min(total - 1, Math.round(raw)));
+    if (force) {
+      if (tweenId) {
+        cancelAnimationFrame(tweenId);
+        tweenId = 0;
       }
+      target = desired;
+      position = desired;
+      render();
       return;
     }
+    // isteresi sulla metà card: il bersaglio cambia solo quando si è davvero più vicini all'altra
+    if (desired !== target && Math.abs(raw - position) >= .55) {
+      target = desired;
+      tweenTo(target);
+    }
+  }
 
-    const next = index + direction;
-    if (next < 0 || next > total - 1) return;
-    event.preventDefault();
-    if (animating || touchConsumed || !wheelOpen) return;
-    if (Math.abs(delta) < 44) return;
-    touchConsumed = true;
-    touchStartY = event.touches[0].clientY;
-    go(direction);
-  }, { passive: false });
+  function scrollToIndex(next) {
+    const clamped = Math.max(0, Math.min(total - 1, next));
+    const ratio = total > 1 ? clamped / (total - 1) : 0;
+    const scrollable = Math.max(1, road.offsetHeight - stageHeight);
+    const top = road.getBoundingClientRect().top + scrollY + ratio * scrollable;
+    scrollTo({ top, behavior: 'smooth' });
+  }
 
-  stage.addEventListener('touchend', () => {
-    lastTouchEnd = performance.now();
-    touchStartY = null;
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(settle, 240);
+  prevButton.addEventListener('click', () => scrollToIndex(index - 1));
+  nextButton.addEventListener('click', () => scrollToIndex(index + 1));
+
+  let ticking = false;
+  addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      update();
+    });
   }, { passive: true });
-
-  addEventListener('keydown', (event) => {
-    if (!aligned() || event.ctrlKey || event.metaKey || event.altKey) return;
-    if (document.getElementById('terminal')?.open) return;
-    const target = event.target;
-    if (target instanceof HTMLElement && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
-    const keys = { ArrowDown: 1, PageDown: 1, ArrowRight: 1, ArrowUp: -1, PageUp: -1, ArrowLeft: -1, ' ': 1 };
-    const direction = keys[event.key];
-    if (!direction) return;
-    lastDirection = direction;
-    if (go(direction) === 'edge') return;
-    event.preventDefault();
-  });
-
-  addEventListener('resize', () => { measure(); render(); settle(); }, { passive: true });
+  addEventListener('resize', () => { measure(); update(true); }, { passive: true });
   if ('ResizeObserver' in window) {
-    const observer = new ResizeObserver(() => { measure(); render(); });
+    const observer = new ResizeObserver(() => { measure(); update(true); });
     observer.observe(stage);
     cards.forEach((card) => observer.observe(card));
   }
-  if (document.fonts?.ready) document.fonts.ready.then(() => { measure(); render(); });
-  addEventListener('load', () => { measure(); render(); }, { once: true });
+  if (document.fonts?.ready) document.fonts.ready.then(() => { measure(); update(true); });
+  addEventListener('load', () => { measure(); update(true); }, { once: true });
   measure();
-  render();
+  update(true);
 }
 function setupParticleIcons() {
   const icons = {
@@ -693,7 +969,7 @@ function setupTerminal() {
   function runThemeDownload(label,done){
     const popup=document.createElement('div');
     popup.className='theme-download';
-    popup.innerHTML='<div class="theme-download-head"><i></i><span>scaricando tema <b></b></span><em>0%</em></div><div class="theme-download-bar"><i></i></div><div class="theme-download-meta">theme-pack / <b></b> · 1.2 kb</div>';
+    popup.innerHTML=`<div class="theme-download-head"><i></i><span>${t('terminal.downloadingTheme')} <b></b></span><em>0%</em></div><div class="theme-download-bar"><i></i></div><div class="theme-download-meta">theme-pack / <b></b> · 1.2 kb</div>`;
     const names=popup.querySelectorAll('b');
     names[0].textContent=label;
     names[1].textContent=label;
@@ -722,7 +998,7 @@ function setupTerminal() {
     closing=false;
     dialog.classList.remove('is-closing');
     dialog.showModal();
-    if(!output.childElementCount){print('molios shell [Arch Linux]');print('Digita "help" per vedere i comandi.');}
+    if(!output.childElementCount){print('molios shell [Arch Linux]');print(t('terminal.intro2'));}
     input.focus();
   }
   function closeTerminal(){
@@ -736,31 +1012,31 @@ function setupTerminal() {
     },300);
   }
   function print(text,type='result'){const line=document.createElement('p');line.className=`terminal-line ${type}`;line.textContent=text;output.append(line);output.scrollTop=output.scrollHeight;}
-  function commandHelp(){print('Comandi disponibili:');print('help                 mostra i comandi');print('whoami               presenta il profilo');print('projects             elenca i progetti');print('sudo theme <colore>  blue, green, purple, red, amber, yellow, pink, cyan, reset');print('clear                pulisce il terminale');print('exit                 chiude il terminale');}
+  function commandHelp(){print(t('terminal.help.title'));print(t('terminal.help.help'));print(t('terminal.help.whoami'));print(t('terminal.help.projects'));print(t('terminal.help.theme'));print(t('terminal.help.clear'));print(t('terminal.help.exit'));}
   function run(raw){const command=raw.trim();if(!command)return;print(`root@molios ~ $ ${command}`,'command');const args=command.toLowerCase().split(/\s+/);
     if(args[0]==='help'||args[0]==='man')commandHelp();
-    else if(args[0]==='whoami')print('Molinays — dev, self-hosting, hardware e video editing dal 2024.');
-    else if(args[0]==='projects')print('MoliOptimizer · MoliDownloader · MoliArchive · Gaming, cut.');
+    else if(args[0]==='whoami')print(t('terminal.whoami'));
+    else if(args[0]==='projects')print(t('terminal.projects'));
     else if(args[0]==='clear')output.replaceChildren();
     else if(args[0]==='exit')closeTerminal();
     else if(args[0]==='sudo'&&args[1]==='theme'){
       const color=args[2];
       if(color==='reset'){
-        print('Scaricando tema default...','success');
+        print(t('terminal.themeDefault'),'success');
         setTimeout(()=>{closeTerminal();setTimeout(()=>{
           runThemeWave(initialTheme[1],initialTheme[0],()=>applyTheme(null,true));
           runThemeDownload('default',()=>{});
         },240);},380);
         return;
       }
-      if(!colors[color]){print(`Tema non trovato. Scegli: ${Object.keys(colors).join(', ')}, reset`,'error');return;}
-      print(`Scaricando tema ${color}...`,'success');
+      if(!colors[color]){print(t('terminal.themeNotFound',{list:`${Object.keys(colors).join(', ')}, reset`}),'error');return;}
+      print(t('terminal.themeDownloading',{name:color}),'success');
       setTimeout(()=>{closeTerminal();setTimeout(()=>{
         // popup al centro e onda che passa sotto, in contemporanea
         runThemeWave(colors[color][1],colors[color][0],()=>applyTheme(color));
         runThemeDownload(color,()=>{});
       },240);},380);
-    } else print(`zsh: comando non trovato: ${args[0]} (prova "help")`,'error');
+    } else print(t('terminal.commandNotFound',{name:args[0]}),'error');
   }
   byId('terminal-launch').addEventListener('click',openTerminal);
   byId('terminal-close').addEventListener('click',closeTerminal);
@@ -883,7 +1159,6 @@ function setupBoot() {
     if(progress<1){requestAnimationFrame(tick);return;}
     boot.classList.add('is-done');
     document.body.classList.add('is-ready');
-    setTimeout(()=>boot.remove(),900);
   }
   requestAnimationFrame(tick);
 }
@@ -900,11 +1175,20 @@ function setupContactForm() {
   const message = byId('contact-message');
   const fields = [name, email, message];
 
-  function say(text, type) {
-    status.textContent = text;
+  let statusKey = '';
+  let statusVars = null;
+  let statusType = '';
+  function say(keyName = '', type = '', vars = null) {
+    statusKey = keyName;
+    statusVars = vars;
+    statusType = type;
+    status.textContent = keyName ? t(keyName, vars) : '';
     status.classList.toggle('is-ok', type === 'ok');
     status.classList.toggle('is-error', type === 'error');
   }
+  onLanguageChange(() => {
+    if (statusKey) status.textContent = t(statusKey, statusVars);
+  });
 
   function validate() {
     let valid = true;
@@ -923,16 +1207,16 @@ function setupContactForm() {
   }));
 
   function sendByMail(data) {
-    const subject = encodeURIComponent(`Messaggio dal sito - ${data.name}`);
+    const subject = encodeURIComponent(t('contact.mailSubject', {name: data.name}));
     const body = encodeURIComponent(`${data.message}\n\n- ${data.name} (${data.email})`);
     location.href = `mailto:${fallback}?subject=${subject}&body=${body}`;
-    say('Apro il tuo client di posta con il messaggio gia scritto.', 'ok');
+    say('contact.mailOpened', 'ok');
   }
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!validate()) {
-      say('Controlla i campi evidenziati.', 'error');
+      say('contact.checkFields', 'error');
       return;
     }
     const data = {
@@ -941,7 +1225,7 @@ function setupContactForm() {
       message: message.value.trim()
     };
     if (form.elements.botcheck?.checked) {
-      say('Messaggio inviato.', 'ok');
+      say('contact.sent', 'ok');
       return;
     }
     if (!key) {
@@ -949,18 +1233,18 @@ function setupContactForm() {
         sendByMail(data);
         return;
       }
-      say('Form non ancora collegato: manca la chiave di invio. Scrivimi su Discord o GitHub.', 'error');
+      say('contact.notConnected', 'error');
       return;
     }
     button.disabled = true;
-    say('Invio in corso...');
+    say('contact.sending');
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
           access_key: key,
-          subject: `Nuovo messaggio dal sito - ${data.name}`,
+          subject: t('contact.newSubject', {name: data.name}),
           from_name: 'Molinays portfolio',
           name: data.name,
           email: data.email,
@@ -970,21 +1254,22 @@ function setupContactForm() {
       const result = await response.json().catch(() => ({}));
       if (response.ok && result.success) {
         form.reset();
-        say('Messaggio inviato. Ti rispondo il prima possibile.', 'ok');
+        say('contact.sentReply', 'ok');
       } else if (response.status === 429) {
-        say('Troppi messaggi in poco tempo: riprova tra un minuto.', 'error');
+        say('contact.tooMany', 'error');
       } else if (response.status === 400 || response.status === 422) {
-        say('Controlla i dati inseriti e riprova.', 'error');
+        say('contact.badData', 'error');
       } else {
-        say('Invio non riuscito, riprova tra poco.', 'error');
+        say('contact.failed', 'error');
       }
     } catch {
-      say('Rete non raggiungibile: riprova o scrivimi su Discord.', 'error');
+      say('contact.network', 'error');
     }
     button.disabled = false;
   });
 }
 
+setupLanguage();
 loadPresence();
 connectPresenceSocket();
 setupAmbient();

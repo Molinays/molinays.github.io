@@ -238,6 +238,85 @@ input:focus-visible {
   box-shadow: 0 0 13px #57dfa2;
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff06;
+  color: #b4c1d8;
+  font: 10px var(--mono);
+  letter-spacing: .12em;
+  cursor: pointer;
+  transition: color .25s, border-color .25s, background .25s, box-shadow .25s;
+}
+
+.lang-toggle:hover {
+  color: var(--ink);
+  border-color: var(--blue-strong);
+  background: var(--blue-faint);
+  box-shadow: 0 0 20px var(--blue-soft);
+}
+
+.lang-toggle:disabled {
+  cursor: default;
+}
+
+.lang-globe {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  transition: transform .45s cubic-bezier(.3, 1, .3, 1), color .25s;
+}
+
+.lang-toggle:hover .lang-globe {
+  transform: rotate(180deg);
+  color: var(--blue2);
+}
+
+.lang-toggle.is-switching {
+  border-color: var(--blue-strong);
+  color: var(--ink);
+  box-shadow: 0 0 20px var(--blue-soft);
+}
+
+.lang-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.lang-pair b {
+  font-weight: 500;
+  color: var(--blue2);
+}
+
+.lang-pair i {
+  font-style: normal;
+  font-size: 9px;
+  opacity: .5;
+}
+
+.lang-pair span {
+  opacity: .5;
+  transition: opacity .25s;
+}
+
+.lang-toggle:hover .lang-pair span {
+  opacity: .85;
+}
+
 .hero {
   min-height: calc(100svh - 82px);
   padding: 75px 0 88px;
@@ -647,13 +726,14 @@ h1 .dot {
 
 .road {
   position: relative;
-  height: 100svh;
   min-height: 690px;
 }
 
+/* lo stage resta agganciato mentre si scorre: i progetti avanzano con lo scroll nativo */
 .road-stage {
-  position: relative;
-  height: 100%;
+  position: sticky;
+  top: 0;
+  height: 100svh;
   min-height: inherit;
   overflow: hidden;
   isolation: isolate;
@@ -2005,6 +2085,21 @@ h1 .dot {
     display: none;
   }
 
+  .top-actions {
+    gap: 10px;
+  }
+
+  .lang-toggle {
+    padding: 6px 9px;
+    gap: 5px;
+    font-size: 8px;
+  }
+
+  .lang-globe {
+    width: 11px;
+    height: 11px;
+  }
+
   .hero {
     padding: 65px 0 75px;
     gap: 52px;
@@ -2345,11 +2440,30 @@ h1 .dot {
   }
 
   .nav {
-    gap: 9px;
+    gap: 7px;
   }
 
   .nav a {
     font-size: 8px;
+  }
+
+  /* su schermi molto stretti il toggle mostra solo la lingua di arrivo */
+  .lang-toggle {
+    padding: 6px 9px;
+  }
+
+  .lang-globe {
+    display: none;
+  }
+
+  .lang-pair b,
+  .lang-pair i {
+    display: none;
+  }
+
+  .lang-pair span {
+    opacity: 1;
+    color: var(--blue2);
   }
 
   .hero {
@@ -2647,6 +2761,18 @@ h1 .dot {
 .contact-send:active,
 .footer button:active {
   transform: scale(.972);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
