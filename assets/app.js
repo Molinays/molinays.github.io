@@ -1241,10 +1241,16 @@ function setupTerminal() {
     `;
     document.body.appendChild(restoreOverlay);
     
+    // Scrolla in cima per evitare che l'overlay si "sposti"
+    window.scrollTo(0, 0);
+    
     // Forza il reflow
     void restoreOverlay.offsetWidth;
     restoreOverlay.classList.add('is-active');
 
+    // Rimuove l'animazione globale per non spostare l'overlay
+    document.body.classList.remove('is-glitched');
+    
     const logContainer = byId('restore-log');
     const progressBar = byId('restore-progress-bar');
     
@@ -1285,8 +1291,6 @@ function setupTerminal() {
         
         // Esegui il fix reale al termine della finta animazione
         setTimeout(() => {
-          document.body.classList.remove('is-glitched');
-          
           const topStatusText = byId('top-status-text');
           const topStatusDot = byId('top-status-dot');
           if(topStatusText) topStatusText.textContent = 'STATUS : ONLINE';
@@ -1445,7 +1449,8 @@ function setupSmoothScroll() {
     const road = document.querySelector('.road');
     const contact = document.querySelector('#contatti');
     
-    if (road && contact && hash === '#contatti') {
+    // Dissolvenza per i contatti o per tornare su
+    if (road && contact && (hash === '#contatti' || hash === '#top')) {
       const fade = document.createElement('div');
       fade.className = 'fade-transition';
       document.body.appendChild(fade);
@@ -1455,7 +1460,7 @@ function setupSmoothScroll() {
       });
       
       setTimeout(() => {
-        scrollTo(0, Math.round(contact.getBoundingClientRect().top + scrollY));
+        scrollTo(0, hash === '#contatti' ? Math.round(contact.getBoundingClientRect().top + scrollY) : 0);
         
         setTimeout(() => {
           fade.classList.remove('is-active');

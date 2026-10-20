@@ -2205,11 +2205,7 @@ h1 .dot {
   100% { transform: translate(0); }
 }
 
-/* Progetti */
-.is-glitched .road-stage {
-  transform: translateY(100px) scale(0.9) !important;
-  transition: transform 1s ease;
-}
+/* Progetti (senza allungare la pagina) */
 .is-glitched .road-card[data-project="0"] {
   transform: translate3d(-50%, 0, 0) rotate(-5deg) scale(1.05) !important;
   border-color: #ff4d5e;
