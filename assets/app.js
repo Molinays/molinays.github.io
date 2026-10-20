@@ -95,16 +95,22 @@ const translations = {
     'terminal.help.help': 'help                 mostra i comandi',
     'terminal.help.whoami': 'whoami               presenta il profilo',
     'terminal.help.projects': 'projects             elenca i progetti',
+    'terminal.help.themes': 'themes               elenca i temi disponibili',
     'terminal.help.theme': 'sudo theme <colore>  blue, green, purple, red, amber, yellow, pink, cyan, reset',
+    'terminal.help.fix': 'fix                  ripara il sistema da eventuali glitch',
+    'terminal.help.glitch': 'glitch               causa un errore di sistema',
     'terminal.help.clear': 'clear                pulisce il terminale',
     'terminal.help.exit': 'exit                 chiude il terminale',
-    'terminal.whoami': 'Molinays — dev, self-hosting, hardware e video editing dal 2024.',
-    'terminal.projects': 'MoliOptimizer · MoliDownloader · MoliArchive · Gaming, cut.',
+    'terminal.whoami': 'Molinays — Full-Stack Developer, Server Admin e Video Editor. 17 anni, appassionato di tutto ciò che è smontabile.',
+    'terminal.projects': 'MoliOptimizer (Windows) · MoliDownloader (WebApp) · MoliArchive (Privato) · Pingu (Bot Discord)',
     'terminal.themeDefault': 'Scaricando tema default...',
     'terminal.themeNotFound': 'Tema non trovato. Scegli: {list}',
     'terminal.themeDownloading': 'Scaricando tema {name}...',
     'terminal.commandNotFound': 'zsh: comando non trovato: {name} (prova "help")',
     'terminal.downloadingTheme': 'scaricando tema',
+    'terminal.fixing': 'Ripristino integrità sistema...',
+    'terminal.fixed': 'Sistema ripristinato con successo. Nessun errore rilevato.',
+    'terminal.themes': 'Temi disponibili: blue, green, purple, red, amber, yellow, pink, cyan. Usa "sudo theme <colore>"',
     'presence.online': 'Online',
     'presence.idle': 'Inattivo',
     'presence.dnd': 'Non disturbare',
@@ -213,16 +219,22 @@ const translations = {
     'terminal.help.help': 'help                 show the commands',
     'terminal.help.whoami': 'whoami               introduce the profile',
     'terminal.help.projects': 'projects             list the projects',
+    'terminal.help.themes': 'themes               list available themes',
     'terminal.help.theme': 'sudo theme <color>   blue, green, purple, red, amber, yellow, pink, cyan, reset',
+    'terminal.help.fix': 'fix                  repair system from glitches',
+    'terminal.help.glitch': 'glitch               cause a system error',
     'terminal.help.clear': 'clear                clear the terminal',
     'terminal.help.exit': 'exit                 close the terminal',
-    'terminal.whoami': 'Molinays — dev, self-hosting, hardware and video editing since 2024.',
-    'terminal.projects': 'MoliOptimizer · MoliDownloader · MoliArchive · Gaming, cut.',
+    'terminal.whoami': 'Molinays — Full-Stack Developer, Server Admin and Video Editor. 17 y/o, passionate about everything that can be taken apart.',
+    'terminal.projects': 'MoliOptimizer (Windows) · MoliDownloader (WebApp) · MoliArchive (Private) · Pingu (Discord Bot)',
     'terminal.themeDefault': 'Downloading default theme...',
     'terminal.themeNotFound': 'Theme not found. Choose: {list}',
     'terminal.themeDownloading': 'Downloading {name} theme...',
     'terminal.commandNotFound': 'zsh: command not found: {name} (try "help")',
     'terminal.downloadingTheme': 'downloading theme',
+    'terminal.fixing': 'Restoring system integrity...',
+    'terminal.fixed': 'System successfully restored. No errors detected.',
+    'terminal.themes': 'Available themes: blue, green, purple, red, amber, yellow, pink, cyan. Use "sudo theme <color>"',
     'presence.online': 'Online',
     'presence.idle': 'Idle',
     'presence.dnd': 'Do not disturb',
@@ -311,7 +323,6 @@ function setupLanguage() {
     swapping = true;
     toggle.disabled = true;
     toggle.classList.add('is-switching');
-    // nessuna animazione di pagina: la schermata di boot copre tutto e la lingua cambia dietro
     playBootSequence({
       duration: 780,
       coverAt: 300,
@@ -327,7 +338,6 @@ function setupLanguage() {
   });
 }
 
-// riproduce la schermata di caricamento iniziale (barra + percentuale)
 function playBootSequence({ duration = 780, coverAt = 300, onCover } = {}) {
   const boot = byId('boot');
   if (!boot) {
@@ -336,7 +346,6 @@ function playBootSequence({ duration = 780, coverAt = 300, onCover } = {}) {
   }
   const fill = byId('boot-fill');
   const readout = byId('boot-value');
-  // dal secondo giro il fallback CSS non serve: la visibilità la comandiamo noi
   boot.style.animation = 'none';
   boot.style.transition = 'none';
   boot.classList.remove('is-done');
@@ -369,7 +378,6 @@ function playBootSequence({ duration = 780, coverAt = 300, onCover } = {}) {
       else finish();
     };
     requestAnimationFrame(tick);
-    // rete di sicurezza: se i frame non girano, la schermata non resta bloccata
     setTimeout(finish, duration + 700);
   });
 }
@@ -381,6 +389,30 @@ function markPresenceUnavailable() {
   presenceFailed = true;
   byId('presence-text').textContent = t('presence.unavailable');
   byId('discord-state').textContent = t('presence.unreachable');
+  
+  const presenceDot = byId('presence-dot');
+  const avatarDot = byId('avatar-dot');
+  
+  if (presenceDot) presenceDot.className = 'presence-dot unavailable';
+  if (avatarDot) avatarDot.className = 'avatar-dot unavailable';
+}
+
+function activityIconUrl(activity) {
+  if (!activity) return '';
+  const assets = activity.assets || {};
+  const large = assets.large_image;
+  const appId = activity.application_id;
+  if (large) {
+    if (large.startsWith('mp:external/')) {
+      const path = large.replace('mp:external/', '');
+      return `https://media.discordapp.net/external/${path}`;
+    }
+    if (large.startsWith('spotify:')) return '';
+    if (appId) return `https://cdn.discordapp.com/app-assets/${appId}/${large}.png`;
+    return `https://cdn.discordapp.com/app-assets/${large}.png`;
+  }
+  if (appId) return `https://cdn.discordapp.com/app-icons/${appId}/${activity.application_id}.png`;
+  return '';
 }
 
 function renderPresence(presence) {
@@ -389,30 +421,52 @@ function renderPresence(presence) {
   presenceFailed = false;
   const user = presence.discord_user;
   const status = presence.discord_status || 'offline';
+  const normalizedStatus = status === 'offline' ? 'offline' : status;
+  
   byId('discord-name').textContent = user.global_name || user.username || 'Molinays';
   byId('discord-handle').textContent = `@${user.username || 'molinays'}`;
-  byId('discord-state').textContent = statusLabel(status);
-  byId('presence-text').textContent = statusLabel(status);
-  byId('nav-presence').textContent = statusLabel(status).toUpperCase();
-  byId('presence-dot').className = `presence-dot ${status}`;
-  byId('avatar-dot').className = `avatar-dot ${status}`;
+  byId('discord-state').textContent = statusLabel(normalizedStatus);
+  byId('presence-text').textContent = statusLabel(normalizedStatus);
+  
+  const presenceDot = byId('presence-dot');
+  const avatarDot = byId('avatar-dot');
+  
+  if (presenceDot) presenceDot.className = `presence-dot ${normalizedStatus}`;
+  if (avatarDot) avatarDot.className = `avatar-dot ${normalizedStatus}`;
+
   if (user.avatar) {
     const ext = user.avatar.startsWith('a_') ? 'gif' : 'png';
     byId('discord-avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${ext}?size=128`;
   }
+
   const spotify = presence.spotify;
   const game = (presence.activities || []).find((activity) => activity.type !== 4 && activity.name !== 'Spotify');
+  const iconEl = byId('activity-icon');
+
   if (spotify) {
-    byId('activity-icon').textContent = '♪';
+    if (spotify.album_art_url) {
+      iconEl.innerHTML = `<img src="${spotify.album_art_url}" alt="" loading="lazy">`;
+      iconEl.style.background = '';
+    } else {
+      iconEl.textContent = '♪';
+      iconEl.style.background = '';
+    }
     byId('activity-title').textContent = spotify.song || 'Spotify';
     byId('activity-sub').textContent = spotify.artist ? t('presence.byArtist', {artist: spotify.artist}) : t('presence.listening');
-    if (spotify.album_art_url) byId('activity-icon').style.background = `center / cover url("${spotify.album_art_url}")`;
   } else if (game) {
-    byId('activity-icon').textContent = '>'; byId('activity-icon').style.background = '';
+    const url = activityIconUrl(game);
+    if (url) {
+      iconEl.innerHTML = `<img src="${url}" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode('>'))">`;
+      iconEl.style.background = '';
+    } else {
+      iconEl.textContent = '>';
+      iconEl.style.background = '';
+    }
     byId('activity-title').textContent = game.name || t('presence.activityDiscord');
     byId('activity-sub').textContent = game.details || game.state || t('presence.activityOngoing');
   } else {
-    byId('activity-icon').textContent = 'X'; byId('activity-icon').style.background = '';
+    iconEl.textContent = 'X';
+    iconEl.style.background = '';
     byId('activity-title').textContent = t('presence.noActivity');
     byId('activity-sub').textContent = t('presence.nothingNow');
   }
@@ -478,10 +532,13 @@ function mixRgb(from, to, weight) {
 
 function setupAmbient() {
   const canvas = byId('ambient');
-  const ctx = canvas.getContext('2d');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
   let width = 0, height = 0, points = [];
   let dotColor = 'rgba(105,178,255,.7)';
   let lineRgb = { r: 52, g: 126, b: 239 };
+  let frameId = 0;
+  let lastTime = 0;
 
   function readAmbientColors() {
     const style = getComputedStyle(document.documentElement);
@@ -495,32 +552,59 @@ function setupAmbient() {
     new MutationObserver(readAmbientColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'style'] });
   }
   function resize() {
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(devicePixelRatio || 1, 1.25);
     width = innerWidth; height = innerHeight;
     canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    const count = Math.min(72, Math.round(width * height / 17000));
+    const count = Math.min(48, Math.round(width * height / 24000));
     points = Array.from({length:count}, () => ({x:Math.random()*width,y:Math.random()*height,vx:(Math.random()-.5)*.34,vy:(Math.random()-.5)*.34,r:Math.random()*1.5+.4}));
   }
-  function draw() {
+  function draw(now) {
+    if (!lastTime) lastTime = now;
+    const delta = Math.min(64, now - lastTime);
+    lastTime = now;
+    const step = Math.min(2, delta / 16.7);
     ctx.clearRect(0,0,width,height);
     for (const p of points) {
-      p.x += p.vx; p.y += p.vy;
+      p.x += p.vx * step; p.y += p.vy * step;
       if (p.x < 0 || p.x > width) p.vx *= -1;
       if (p.y < 0 || p.y > height) p.vy *= -1;
       ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=dotColor; ctx.fill();
     }
+    const maxDistSq = 135 * 135;
     for (let i=0;i<points.length;i++) for (let j=i+1;j<points.length;j++) {
-      const dx=points[i].x-points[j].x,dy=points[i].y-points[j].y,d=Math.hypot(dx,dy);
-      if (d<135) {ctx.beginPath();ctx.moveTo(points[i].x,points[i].y);ctx.lineTo(points[j].x,points[j].y);ctx.strokeStyle=`rgba(${lineRgb.r},${lineRgb.g},${lineRgb.b},${(1-d/135)*.23})`;ctx.lineWidth=.8;ctx.stroke();}
+      const dx=points[i].x-points[j].x,dy=points[i].y-points[j].y;
+      const dSq = dx*dx + dy*dy;
+      if (dSq < maxDistSq) {
+        const d = Math.sqrt(dSq);
+        ctx.beginPath();ctx.moveTo(points[i].x,points[i].y);ctx.lineTo(points[j].x,points[j].y);
+        ctx.strokeStyle=`rgba(${lineRgb.r},${lineRgb.g},${lineRgb.b},${(1-d/135)*.23})`;ctx.lineWidth=.8;ctx.stroke();
+      }
     }
-    requestAnimationFrame(draw);
+    frameId = requestAnimationFrame(draw);
   }
-  addEventListener('resize',resize,{passive:true}); resize(); draw();
+  function start() {
+    if (!frameId) {
+      lastTime = 0;
+      frameId = requestAnimationFrame(draw);
+    }
+  }
+  function stop() {
+    if (frameId) {
+      cancelAnimationFrame(frameId);
+      frameId = 0;
+    }
+  }
+  addEventListener('resize', resize, {passive:true});
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop(); else start();
+  });
+  resize(); start();
 }
 
 function setupRoad() {
   const road = document.querySelector('.road');
+  if (!road) return;
   const stage = road.querySelector('.road-stage');
   const cards = [...road.querySelectorAll('.road-card')];
   const counter = byId('road-count');
@@ -545,7 +629,8 @@ function setupRoad() {
   onLanguageChange(labelJumps);
 
   const states = cards.map(() => null);
-  const easeOut = (value) => 1 - Math.pow(1 - value, 3);
+  const cardStates = cards.map(() => ({ y: '', scale: '', opacity: '', order: '', pointer: '' }));
+  const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
   let index = 0;
   let position = 0;
   let target = 0;
@@ -554,21 +639,24 @@ function setupRoad() {
   let heights = [];
   let cardStep = 30;
   let scrollStep = 0;
+  let lastCounter = '';
+  let lastActive = -1;
 
   function measure() {
     stageHeight = stage.offsetHeight || innerHeight;
     heights = cards.map((card) => card.offsetHeight || 440);
     cardStep = Math.max(22, Math.min(46, stageHeight * .048));
     scrollStep = Math.max(380, Math.min(Math.round(innerHeight * .85), 760));
-    // una viewport di stage + una porzione di scroll per ogni card
     road.style.height = `${Math.round(stageHeight + scrollStep * (total - 1))}px`;
   }
 
-  function render() {
+  function render(force) {
     const focusY = stageHeight * .58;
     const baseHeight = Math.max(...heights, 440);
     const active = Math.max(0, Math.min(total - 1, Math.round(position)));
-    cards.forEach((card, i) => {
+    for (let i = 0; i < total; i++) {
+      const card = cards[i];
+      const state = cardStates[i];
       const offset = i - position;
       const ahead = Math.max(0, offset);
       const behind = Math.max(0, -offset);
@@ -581,54 +669,65 @@ function setupRoad() {
         : Math.max(0, 1 - Math.pow(behind, 2) * 1.6);
       const center = focusY + shift;
       const reachable = i === active;
-      card.style.setProperty('--card-y', `${(center - height / 2).toFixed(1)}px`);
-      card.style.setProperty('--card-scale', scale.toFixed(3));
-      card.style.setProperty('--card-opacity', opacity.toFixed(3));
-      card.style.setProperty('--card-order', String(Math.max(1, 120 - Math.round(distance * 12))));
-      card.style.setProperty('--card-pointer', reachable ? 'auto' : 'none');
+      const y = `${(center - height / 2).toFixed(1)}px`;
+      const scaleStr = scale.toFixed(3);
+      const opacityStr = opacity.toFixed(3);
+      const orderStr = String(Math.max(1, 120 - Math.round(distance * 12)));
+      const pointer = reachable ? 'auto' : 'none';
+      if (force || state.y !== y) { state.y = y; card.style.setProperty('--card-y', y); }
+      if (force || state.scale !== scaleStr) { state.scale = scaleStr; card.style.setProperty('--card-scale', scaleStr); }
+      if (force || state.opacity !== opacityStr) { state.opacity = opacityStr; card.style.setProperty('--card-opacity', opacityStr); }
+      if (force || state.order !== orderStr) { state.order = orderStr; card.style.setProperty('--card-order', orderStr); }
+      if (force || state.pointer !== pointer) { state.pointer = pointer; card.style.setProperty('--card-pointer', pointer); }
       if (states[i] !== reachable) {
         states[i] = reachable;
         card.inert = !reachable;
         card.setAttribute('aria-hidden', String(!reachable));
       }
-    });
-    counter.textContent = String(active + 1).padStart(2, '0');
-    jumpers.forEach((button, i) => {
-      button.classList.toggle('is-active', i === active);
-      button.setAttribute('aria-current', i === active ? 'true' : 'false');
-    });
-    prevButton.disabled = active === 0;
-    nextButton.disabled = active === total - 1;
+    }
+    const countText = String(active + 1).padStart(2, '0');
+    if (countText !== lastCounter) {
+      lastCounter = countText;
+      counter.textContent = countText;
+    }
+    if (active !== lastActive) {
+      lastActive = active;
+      jumpers.forEach((button, i) => {
+        button.classList.toggle('is-active', i === active);
+        button.setAttribute('aria-current', i === active ? 'true' : 'false');
+      });
+      prevButton.disabled = active === 0;
+      nextButton.disabled = active === total - 1;
+    }
     controls.classList.remove('is-busy');
     index = active;
   }
 
-  // breve assestamento sulla card più vicina: niente scatti e nessuno blocco dello scroll
   function tweenTo(next) {
     if (tweenId) {
       cancelAnimationFrame(tweenId);
       tweenId = 0;
     }
     const from = position;
-    const duration = Math.max(240, Math.min(520, 240 + Math.abs(next - from) * 150));
+    const duration = Math.max(320, Math.min(550, 300 + Math.abs(next - from) * 150));
     const started = performance.now();
     const frame = (now) => {
       const progress = Math.min(1, (now - started) / duration);
-      position = from + (next - from) * easeOut(progress);
-      render();
+      position = from + (next - from) * easeOutCubic(progress);
+      render(false);
       if (progress < 1) {
         tweenId = requestAnimationFrame(frame);
         return;
       }
       position = next;
       tweenId = 0;
-      render();
+      render(true);
     };
     tweenId = requestAnimationFrame(frame);
   }
 
-  // lo scroll nativo decide la card attiva: nessun blocco, nessuno snap forzato
   function update(force) {
+    if (document.body.classList.contains('is-glitched')) return;
     const rect = road.getBoundingClientRect();
     const scrollable = Math.max(1, road.offsetHeight - stageHeight);
     const raw = Math.max(0, Math.min(1, -rect.top / scrollable)) * (total - 1);
@@ -640,22 +739,22 @@ function setupRoad() {
       }
       target = desired;
       position = desired;
-      render();
+      render(true);
       return;
     }
-    // isteresi sulla metà card: il bersaglio cambia solo quando si è davvero più vicini all'altra
-    if (desired !== target && Math.abs(raw - position) >= .55) {
+    if (desired !== target && Math.abs(raw - position) >= .58) {
       target = desired;
       tweenTo(target);
     }
   }
 
   function scrollToIndex(next) {
+    if (document.body.classList.contains('is-glitched')) return;
     const clamped = Math.max(0, Math.min(total - 1, next));
     const ratio = total > 1 ? clamped / (total - 1) : 0;
     const scrollable = Math.max(1, road.offsetHeight - stageHeight);
     const top = road.getBoundingClientRect().top + scrollY + ratio * scrollable;
-    scrollTo({ top, behavior: 'smooth' });
+    window.dispatchEvent(new CustomEvent('custom-scroll-to', { detail: { top } }));
   }
 
   prevButton.addEventListener('click', () => scrollToIndex(index - 1));
@@ -667,7 +766,7 @@ function setupRoad() {
     ticking = true;
     requestAnimationFrame(() => {
       ticking = false;
-      update();
+      update(false);
     });
   }, { passive: true });
   addEventListener('resize', () => { measure(); update(true); }, { passive: true });
@@ -681,6 +780,7 @@ function setupRoad() {
   measure();
   update(true);
 }
+
 function setupParticleIcons() {
   const icons = {
     terminal: 'M7 8.5l4 3.5-4 3.5M13 15.5h4.5',
@@ -728,7 +828,6 @@ function setupParticleIcons() {
         }
       }
     }
-    // Centra il disegno sul proprio riquadro: qualunque path resta simmetrico
     const shiftX = size / 2 - (minX + maxX) / 2;
     const shiftY = size / 2 - (minY + maxY) / 2;
     const centered = points.map((point) => ({ x: point.x + shiftX, y: point.y + shiftY }));
@@ -748,6 +847,8 @@ function setupParticleIcons() {
     let hovered = false;
     let visible = true;
     let lastFrame = 0;
+    let isGlitchCanvas = canvas.id === 'glitch-canvas';
+    let glitchStarted = false;
 
     function buildTargets() {
       if (!width || !height) return [];
@@ -762,13 +863,11 @@ function setupParticleIcons() {
     function assignTargets() {
       particles.forEach((particle) => { particle.target = null; });
       if (!targets.length) return;
-      // Solo una parte delle palline compone il disegno: le altre restano a vagare
       const share = .75;
       const formingCount = Math.max(1, Math.round(particles.length * share));
       const free = [];
       const stride = particles.length / formingCount;
       for (let i = 0; i < formingCount; i++) free.push(particles[Math.floor(i * stride)]);
-      // I punti sono distribuiti su tutta l'icona, così il disegno resta completo e simmetrico
       for (let i = 0; i < formingCount; i++) {
         const target = targets[Math.floor(i * targets.length / formingCount)];
         let bestIndex = -1;
@@ -786,7 +885,6 @@ function setupParticleIcons() {
           const [picked] = free.splice(bestIndex, 1);
           picked.target = target;
           picked.settled = false;
-          // partenze scaglionate: arrivano poco a poco, non tutte insieme
           picked.startAt = performance.now() + Math.random() * 1400;
         }
       }
@@ -808,7 +906,6 @@ function setupParticleIcons() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       targets = buildTargets();
       const count = clamp(Math.round(width * height / 600), 130, 280);
-      // Ogni pallina nasce già nel suo punto di riposo: nessuno scatto iniziale
       particles = Array.from({ length: count }, () => {
         const hx = Math.random() * width;
         const hy = Math.random() * height;
@@ -821,11 +918,12 @@ function setupParticleIcons() {
           phase: Math.random() * Math.PI * 2,
           target: null,
           settled: false,
-          startAt: 0
+          startAt: 0,
+          vx: 0,
+          vy: 0
         };
       });
       if (hovered) assignTargets();
-      // ridisegna subito: il canvas non resta mai vuoto dopo un resize
       paint(performance.now());
     }
 
@@ -843,18 +941,50 @@ function setupParticleIcons() {
     function paint(time) {
       const delta = lastFrame ? Math.min(64, time - lastFrame) : 16.7;
       lastFrame = time;
-      const step = Math.min(1, delta / 16.7);
-      // Velocità indipendente dal refresh: identica a 60, 144 o 180 Hz
+      const step = Math.min(1.5, delta / 16.7);
       const formGain = 1 - Math.pow(1 - .05, step);
       const driftGain = 1 - Math.pow(1 - .012, step);
+      
+      const isGlitched = document.body.classList.contains('is-glitched') && isGlitchCanvas;
+      
+      // Se è la canvas del glitch e il glitch è appena partito, inizializza le velocità
+      if (isGlitched && !glitchStarted) {
+        glitchStarted = true;
+        particles.forEach(p => {
+          p.target = null;
+          p.vx = (Math.random() - 0.5) * 3;
+          p.vy = Math.random() * 2; // Inizia a cadere
+        });
+      } else if (!isGlitched) {
+        glitchStarted = false;
+      }
+
       if (visible && width && height) {
         ctx.clearRect(0, 0, width, height);
         ctx.fillStyle = particleColor;
         for (const particle of particles) {
-          const forming = hovered && particle.target && time >= particle.startAt;
-          if (forming) {
+          const forming = hovered && particle.target && time >= particle.startAt && !isGlitched;
+          
+          if (isGlitched) {
+            // Fisica di caduta
+            particle.vy += 0.25 * step; // Gravità
+            particle.x += particle.vx * step;
+            particle.y += particle.vy * step;
+            
+            // Rimbalzo sui bordi laterali
+            if (particle.x < 0 || particle.x > width) {
+              particle.vx *= -1;
+              particle.x = Math.max(0, Math.min(width, particle.x));
+            }
+            
+            // Si ferma sul fondo (per terra)
+            if (particle.y > height - 15) {
+              particle.y = height - 15;
+              particle.vy = 0;
+              particle.vx *= 0.8; // Attrito
+            }
+          } else if (forming) {
             if (particle.settled) {
-              // orbita permanente attorno al punto: l'icona resta viva, senza scatti
               const orbit = time * .0009 + particle.phase;
               const radius = 2 + particle.radius * 1.2;
               const targetX = particle.target.x + Math.cos(orbit) * radius;
@@ -880,7 +1010,8 @@ function setupParticleIcons() {
             particle.x += (driftX - particle.x) * driftGain;
             particle.y += (driftY - particle.y) * driftGain;
           }
-          ctx.globalAlpha = forming ? .95 : .38;
+          
+          ctx.globalAlpha = forming ? .95 : (isGlitched ? 1 : .38);
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, forming ? particle.radius * 1.6 : particle.radius, 0, Math.PI * 2);
           ctx.fill();
@@ -901,7 +1032,6 @@ function setupParticleIcons() {
         entries.forEach((entry) => { visible = entry.isIntersecting; });
       }, { threshold: 0 }).observe(card);
     }
-    // se il contesto viene perso (GPU/driver), lo riprendiamo e ridisegniamo
     canvas.addEventListener('contextlost', (event) => event.preventDefault());
     canvas.addEventListener('contextrestored', () => { resize(); paint(performance.now()); });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) paint(performance.now()); });
@@ -910,13 +1040,13 @@ function setupParticleIcons() {
     requestAnimationFrame(draw);
   });
 }
+
 function setupReveal() {
   const items=[...document.querySelectorAll('.reveal,.life-card')];
   if ('IntersectionObserver' in window) {
     const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}}),{threshold:.12,rootMargin:'0px 0px 4% 0px'});
     items.forEach(item=>observer.observe(item));
   } else items.forEach(item=>item.classList.add('is-visible'));
-  // rete di sicurezza: ciò che è già a schermo non deve restare invisibile
   function ensureVisible(){
     items.forEach(item=>{
       if(item.classList.contains('is-visible'))return;
@@ -932,6 +1062,7 @@ function setupReveal() {
 
 function setupTerminal() {
   const dialog=byId('terminal'),form=byId('terminal-form'),input=byId('terminal-input'),output=byId('terminal-output');
+  if(!dialog)return;
   const colors={blue:['#2784ff','#65c7ff','rgba(39,132,255,.3)'],green:['#20bd70','#83f3a5','rgba(32,189,112,.3)'],purple:['#925cff','#d0aaff','rgba(146,92,255,.3)'],red:['#e64b59','#ff9b9b','rgba(230,75,89,.3)'],amber:['#d6921e','#ffd36f','rgba(214,146,30,.3)'],yellow:['#e6c31d','#ffe680','rgba(230,195,29,.3)'],pink:['#df4ca7','#ff9de2','rgba(223,76,167,.3)'],cyan:['#00a6b7','#77f0f4','rgba(0,166,183,.3)']};
   const initialTheme=[getComputedStyle(document.documentElement).getPropertyValue('--blue').trim(),getComputedStyle(document.documentElement).getPropertyValue('--blue2').trim(),getComputedStyle(document.documentElement).getPropertyValue('--glow').trim()];
   function setThemeAccents(theme){const rgb=theme[0].match(/[\da-f]{2}/gi).map(value=>parseInt(value,16));document.documentElement.style.setProperty('--blue-soft',`rgba(${rgb.join(',')},.14)`);document.documentElement.style.setProperty('--blue-mid',`rgba(${rgb.join(',')},.3)`);document.documentElement.style.setProperty('--blue-strong',`rgba(${rgb.join(',')},.5)`);document.documentElement.style.setProperty('--blue-faint',`rgba(${rgb.join(',')},.07)`);}
@@ -968,7 +1099,6 @@ function setupTerminal() {
     wave.style.setProperty('--wave-a',bright);
     wave.style.setProperty('--wave-b',strong);
     document.body.append(wave);
-    // i colori cambiano mentre l'onda attraversa la pagina
     setTimeout(apply,420);
     setTimeout(()=>wave.remove(),1450);
   }
@@ -1018,13 +1148,198 @@ function setupTerminal() {
     },300);
   }
   function print(text,type='result'){const line=document.createElement('p');line.className=`terminal-line ${type}`;line.textContent=text;output.append(line);output.scrollTop=output.scrollHeight;}
-  function commandHelp(){print(t('terminal.help.title'));print(t('terminal.help.help'));print(t('terminal.help.whoami'));print(t('terminal.help.projects'));print(t('terminal.help.theme'));print(t('terminal.help.clear'));print(t('terminal.help.exit'));}
-  function run(raw){const command=raw.trim();if(!command)return;print(`root@molios ~ $ ${command}`,'command');const args=command.toLowerCase().split(/\s+/);
-    if(args[0]==='help'||args[0]==='man')commandHelp();
-    else if(args[0]==='whoami')print(t('terminal.whoami'));
-    else if(args[0]==='projects')print(t('terminal.projects'));
-    else if(args[0]==='clear')output.replaceChildren();
-    else if(args[0]==='exit')closeTerminal();
+  
+  function commandHelp(){
+    print(t('terminal.help.title'));
+    print(t('terminal.help.help'));
+    print(t('terminal.help.whoami'));
+    print(t('terminal.help.projects'));
+    print(t('terminal.help.themes'));
+    print(t('terminal.help.theme'));
+    print(t('terminal.help.fix'));
+    print(t('terminal.help.glitch'));
+    print(t('terminal.help.clear'));
+    print(t('terminal.help.exit'));
+  }
+
+  function triggerGlitch() {
+    document.body.classList.add('is-glitched');
+    
+    // Cambia status header
+    const topStatusText = byId('top-status-text');
+    const topStatusDot = byId('top-status-dot');
+    if(topStatusText) topStatusText.textContent = 'STATUS : ERROR';
+    if(topStatusDot) {
+      topStatusDot.className = ''; // rimuove .online
+      topStatusDot.style.background = '#ff4d5e';
+      topStatusDot.style.boxShadow = '0 0 13px #ff4d5e';
+    }
+
+    // Crea overlay scanline
+    if(!document.getElementById('glitch-overlay')) {
+      const overlay = document.createElement('div');
+      overlay.id = 'glitch-overlay';
+      overlay.className = 'glitch-overlay';
+      document.body.appendChild(overlay);
+    }
+    
+    // Mostra popup di errore
+    const alertBox = byId('glitch-alert');
+    if (alertBox) {
+      alertBox.classList.add('is-visible');
+    }
+
+    // Glitcha i temi (ciclo caotico)
+    const themes = ['red', 'green', 'purple', 'amber'];
+    let themeIndex = 0;
+    const themeInt = setInterval(() => {
+      if (!document.body.classList.contains('is-glitched')) {
+        clearInterval(themeInt);
+        return;
+      }
+      document.documentElement.style.setProperty('--blue', ['#e64b59', '#20bd70', '#925cff', '#d6921e'][themeIndex % 4]);
+      document.documentElement.style.setProperty('--blue2', ['#ff9b9b', '#83f3a5', '#d0aaff', '#ffd36f'][themeIndex % 4]);
+      themeIndex++;
+    }, 800);
+
+    // Glitcha l'email input
+    const emailInput = byId('contact-message');
+    if (emailInput) {
+      emailInput.value = '';
+      const bugText = "ERRORE_SISTEMA_CRITICO_0x0000F4\nImpossibile inviare il messaggio.\nRiprova più tardi o contatta l'amministratore di sistema.\n\n";
+      let charIdx = 0;
+      const typeInt = setInterval(() => {
+        if (!document.body.classList.contains('is-glitched')) {
+          clearInterval(typeInt);
+          return;
+        }
+        emailInput.value = bugText.substring(0, charIdx) + Array.from({length: Math.random() * 5 | 0}, () => String.fromCharCode(33 + Math.random() * 90 | 0)).join('');
+        charIdx += 2;
+        if (charIdx > bugText.length + 20) charIdx = 0;
+      }, 100);
+
+      // Blocca l'utente dal cancellare
+      emailInput.addEventListener('keydown', (e) => {
+        if (document.body.classList.contains('is-glitched') && e.key !== 'Tab') {
+          e.preventDefault();
+        }
+      });
+    }
+  }
+
+  function fixSystem() {
+    // Crea l'overlay di restore
+    const restoreOverlay = document.createElement('div');
+    restoreOverlay.className = 'restore-system';
+    restoreOverlay.innerHTML = `
+      <div class="restore-header">
+        <span>SYSTEM_RESTORE_UTILITY_v4.0</span>
+        <span class="blink">_</span>
+      </div>
+      <div class="restore-log" id="restore-log"></div>
+      <div class="restore-progress"><div class="restore-progress-bar" id="restore-progress-bar"></div></div>
+    `;
+    document.body.appendChild(restoreOverlay);
+    
+    // Forza il reflow
+    void restoreOverlay.offsetWidth;
+    restoreOverlay.classList.add('is-active');
+
+    const logContainer = byId('restore-log');
+    const progressBar = byId('restore-progress-bar');
+    
+    const logs = [
+      "Inizializzazione protocollo di ripristino...",
+      "Analisi dell'integrità della memoria... [FAILED]",
+      "Trovati 14 settori corrotti.",
+      "Ripristino moduli di sistema...",
+      "-> kernel_panic.sys [OK]",
+      "-> glitch_daemon.exe [OK]",
+      "-> timeline_render.dll [OK]",
+      "-> discord_overlay.dll [OK]",
+      "-> particle_engine.dll [OK]",
+      "Ricostruzione delle texture in corso...",
+      "Riavvio dei processi in background...",
+      "Sincronizzazione dati completata.",
+      "RIPRISTINO COMPLETATO CON SUCCESSO."
+    ];
+
+    let logIndex = 0;
+    let progress = 0;
+    
+    // Aggiungi righe di log progressivamente
+    const logInterval = setInterval(() => {
+      if (logIndex < logs.length) {
+        const p = document.createElement('p');
+        p.className = 'restore-line';
+        if (logs[logIndex].includes('[FAILED]')) p.classList.add('err');
+        else if (logs[logIndex].includes('[OK]')) p.classList.add('ok');
+        p.textContent = `> ${logs[logIndex]}`;
+        logContainer.appendChild(p);
+        logContainer.scrollTop = logContainer.scrollHeight;
+        logIndex++;
+        progress = (logIndex / logs.length) * 100;
+        progressBar.style.width = `${progress}%`;
+      } else {
+        clearInterval(logInterval);
+        
+        // Esegui il fix reale al termine della finta animazione
+        setTimeout(() => {
+          document.body.classList.remove('is-glitched');
+          
+          const topStatusText = byId('top-status-text');
+          const topStatusDot = byId('top-status-dot');
+          if(topStatusText) topStatusText.textContent = 'STATUS : ONLINE';
+          if(topStatusDot) {
+            topStatusDot.className = 'online';
+            topStatusDot.style.background = '';
+            topStatusDot.style.boxShadow = '';
+          }
+
+          const alertBox = byId('glitch-alert');
+          if (alertBox) alertBox.classList.remove('is-visible');
+
+          const overlay = document.getElementById('glitch-overlay');
+          if (overlay) overlay.remove();
+          
+          applyTheme(null, true);
+
+          const emailInput = byId('contact-message');
+          if (emailInput) emailInput.value = '';
+          
+          window.dispatchEvent(new Event('resize'));
+
+          // Dissolvi l'overlay di restore
+          restoreOverlay.classList.remove('is-active');
+          setTimeout(() => restoreOverlay.remove(), 400);
+
+          print(t('terminal.fixed'), 'success');
+        }, 800); // Piccola pausa prima di togliere lo schermo nero
+      }
+    }, 200); // Velocità di scrittura dei log
+  }
+
+  function run(raw){
+    const command=raw.trim();
+    if(!command)return;
+    print(`root@molios ~ $ ${command}`,'command');
+    const args=command.toLowerCase().split(/\s+/);
+    
+    if(args[0]==='help'||args[0]==='man') commandHelp();
+    else if(args[0]==='whoami') print(t('terminal.whoami'));
+    else if(args[0]==='projects') print(t('terminal.projects'));
+    else if(args[0]==='themes') print(t('terminal.themes'));
+    else if(args[0]==='fix') {
+      print(t('terminal.fixing'));
+      closeTerminal();
+      setTimeout(fixSystem, 400);
+    }
+    else if(args[0]==='glitch') {
+      print('Kernel panic - not syncing: Fatal exception', 'error');
+      setTimeout(triggerGlitch, 200);
+    }
+    else if(args[0]==='clear') output.replaceChildren();
+    else if(args[0]==='exit') closeTerminal();
     else if(args[0]==='sudo'&&args[1]==='theme'){
       const color=args[2];
       if(color==='reset'){
@@ -1038,12 +1353,12 @@ function setupTerminal() {
       if(!colors[color]){print(t('terminal.themeNotFound',{list:`${Object.keys(colors).join(', ')}, reset`}),'error');return;}
       print(t('terminal.themeDownloading',{name:color}),'success');
       setTimeout(()=>{closeTerminal();setTimeout(()=>{
-        // popup al centro e onda che passa sotto, in contemporanea
         runThemeWave(colors[color][1],colors[color][0],()=>applyTheme(color));
         runThemeDownload(color,()=>{});
       },240);},380);
     } else print(t('terminal.commandNotFound',{name:args[0]}),'error');
   }
+  
   byId('terminal-launch').addEventListener('click',openTerminal);
   byId('terminal-close').addEventListener('click',closeTerminal);
   dialog.addEventListener('click',event=>{if(event.target===dialog)closeTerminal();});
@@ -1052,6 +1367,31 @@ function setupTerminal() {
     if(event.ctrlKey&&event.key.toLowerCase()==='c'){event.preventDefault();closeTerminal();}
   });
   form.addEventListener('submit',event=>{event.preventDefault();run(input.value);input.value='';});
+
+  // Easter egg trigger
+  const glitchTrigger = byId('glitch-trigger');
+  if (glitchTrigger) {
+    glitchTrigger.addEventListener('click', () => {
+      triggerGlitch();
+    });
+  }
+
+  // Chiudi popup allarme
+  const alertClose = byId('glitch-alert-close');
+  if(alertClose) {
+    alertClose.addEventListener('click', () => {
+      byId('glitch-alert').classList.remove('is-visible');
+    });
+  }
+
+  // Apri terminale dal popup
+  const alertOpenTerminal = byId('glitch-open-terminal');
+  if(alertOpenTerminal) {
+    alertOpenTerminal.addEventListener('click', () => {
+      byId('glitch-alert').classList.remove('is-visible');
+      openTerminal();
+    });
+  }
 }
 
 function setupSmoothScroll() {
@@ -1088,6 +1428,10 @@ function setupSmoothScroll() {
     frame = requestAnimationFrame(step);
   }
 
+  window.addEventListener('custom-scroll-to', (e) => {
+    scrollToY(e.detail.top);
+  });
+
   document.addEventListener('click', (event) => {
     const link = event.target.closest('a[href^="#"]');
     if (!link) return;
@@ -1097,12 +1441,37 @@ function setupSmoothScroll() {
     if (!target) return;
     event.preventDefault();
     history.replaceState(null, '', hash);
+    
+    const road = document.querySelector('.road');
+    const contact = document.querySelector('#contatti');
+    
+    if (road && contact && hash === '#contatti') {
+      const fade = document.createElement('div');
+      fade.className = 'fade-transition';
+      document.body.appendChild(fade);
+      
+      requestAnimationFrame(() => {
+        fade.classList.add('is-active');
+      });
+      
+      setTimeout(() => {
+        scrollTo(0, Math.round(contact.getBoundingClientRect().top + scrollY));
+        
+        setTimeout(() => {
+          fade.classList.remove('is-active');
+          setTimeout(() => fade.remove(), 400);
+        }, 50);
+      }, 350);
+      
+      return;
+    }
+
     scrollToY(Math.round(target.getBoundingClientRect().top + scrollY));
   });
 }
 
 function setupButtonRipples() {
-  const selector = '.button, .project-link, .road-nav, .road-jump, .contact-links a, .contact-send, .footer button';
+  const selector = '.button, .project-link, .road-nav, .road-jump, .contact-links a, .contact-send, .footer button, .glitch-action-btn';
   document.addEventListener('pointerdown', (event) => {
     const element = event.target.closest(selector);
     if (!element) return;
@@ -1129,18 +1498,27 @@ function setupTimeline() {
   let target = 0;
   let shown = 0;
   let frameId = 0;
+  let lastShown = -1;
 
   function paint() {
     frameId = 0;
-    shown += (target - shown) * .14;
-    if (Math.abs(target - shown) < .0015) shown = target;
-    timeline.style.setProperty('--timeline-progress', shown.toFixed(4));
-    const reached = shown * items.length;
-    items.forEach((item, index) => item.classList.toggle('is-on', reached > index + .45));
+    const diff = target - shown;
+    if (Math.abs(diff) < .002) {
+      shown = target;
+    } else {
+      shown += diff * .15;
+    }
+    if (Math.abs(shown - lastShown) > .001) {
+      lastShown = shown;
+      timeline.style.setProperty('--timeline-progress', shown.toFixed(4));
+      const reached = shown * items.length;
+      items.forEach((item, index) => item.classList.toggle('is-on', reached > index + .45));
+    }
     if (shown !== target) frameId = requestAnimationFrame(paint);
   }
 
   function update() {
+    if (document.body.classList.contains('is-glitched')) return;
     const rect = timeline.getBoundingClientRect();
     const start = innerHeight * .88;
     const span = Math.max(1, innerHeight * .52);
@@ -1152,6 +1530,7 @@ function setupTimeline() {
   addEventListener('resize', update, { passive: true });
   update();
 }
+
 function setupBoot() {
   const boot=byId('boot');
   if(!boot)return;
@@ -1221,6 +1600,7 @@ function setupContactForm() {
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (document.body.classList.contains('is-glitched')) return; // Blocca invio se in glitch
     if (!validate()) {
       say('contact.checkFields', 'error');
       return;

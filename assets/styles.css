@@ -234,6 +234,11 @@ input:focus-visible {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  background: #68748b;
+  transition: background .3s, box-shadow .3s;
+}
+
+.top-status i.online {
   background: #57dfa2;
   box-shadow: 0 0 13px #57dfa2;
 }
@@ -459,6 +464,7 @@ h1 .dot {
   max-width: 620px;
   justify-self: end;
   width: 100%;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), rotate 0.6s ease;
 }
 
 .profile-orbit {
@@ -549,6 +555,16 @@ h1 .dot {
   box-shadow: 0 0 11px #ff657e;
 }
 
+.presence-dot.offline,
+.presence-dot.unavailable {
+  background: #ff4d5e;
+  box-shadow: 0 0 11px #ff4d5e;
+}
+
+.presence-dot.connecting {
+  background: #68748b;
+}
+
 .user {
   display: flex;
   align-items: center;
@@ -595,6 +611,11 @@ h1 .dot {
   background: #ff657e;
 }
 
+.avatar-dot.offline,
+.avatar-dot.unavailable {
+  background: #ff4d5e;
+}
+
 .discord-name {
   font-size: 22px;
   font-weight: 600;
@@ -636,6 +657,14 @@ h1 .dot {
   color: var(--blue2);
   font-size: 16px;
   flex: 0 0 34px;
+  overflow: hidden;
+}
+
+.activity-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .activity-body {
@@ -729,7 +758,6 @@ h1 .dot {
   min-height: 690px;
 }
 
-/* lo stage resta agganciato mentre si scorre: i progetti avanzano con lo scroll nativo */
 .road-stage {
   position: sticky;
   top: 0;
@@ -923,6 +951,7 @@ h1 .dot {
   pointer-events: var(--card-pointer, auto);
   transition: box-shadow .3s;
   will-change: transform, opacity;
+  contain: layout style paint;
 }
 
 .road-card::before {
@@ -1291,7 +1320,6 @@ h1 .dot {
   transform: rotate(-4deg);
 }
 
-/* --- art Pingu: icona statica del bot --- */
 .art-pingu .pingu-icon {
   position: relative;
   z-index: 1;
@@ -1428,6 +1456,9 @@ h1 .dot {
   color: var(--blue2);
 }
 
+/* =========================================
+   TIMELINE
+   ========================================= */
 .timeline {
   --timeline-progress: 0;
   position: relative;
@@ -1990,7 +2021,6 @@ h1 .dot {
   transform: none;
 }
 
-/* le card non passano dall'animazione .reveal: niente istante a opacità 0 */
 .life-card.reveal {
   animation: none;
 }
@@ -1998,6 +2028,321 @@ h1 .dot {
 .life-card.is-visible:hover {
   transform: translateY(-7px) scale(1.022);
 }
+
+.fade-transition {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.fade-transition.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* =========================================
+   EFFETTO GLITCH ESTREMO (EASTER EGG)
+   ========================================= */
+
+/* Animazione Global Shake */
+.is-glitched {
+  animation: global-shake 0.5s infinite;
+}
+
+@keyframes global-shake {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Popup di allarme al centro (Mr. Robot Style) */
+.glitch-alert {
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 480px;
+  max-width: calc(100% - 40px);
+  margin: -150px 0 0 -240px;
+  background: #080b10;
+  border: 1px solid #7dff7d;
+  box-shadow: 0 0 20px rgba(125, 255, 125, 0.2), inset 0 0 10px rgba(125, 255, 125, 0.1);
+  color: #7dff7d;
+  font-family: var(--mono);
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+}
+.glitch-alert.is-visible {
+  transform: translate(0, 0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+.glitch-alert-header {
+  background: rgba(125, 255, 125, 0.1);
+  color: #7dff7d;
+  border-bottom: 1px solid #7dff7d;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.glitch-alert-body {
+  padding: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.mrrobot-line {
+  margin: 0 0 12px;
+}
+.mrrobot-code {
+  background: #1a2e1a;
+  color: #7dff7d;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid #3a6b3a;
+}
+.glitch-alert-close {
+  background: transparent;
+  border: none;
+  color: #7dff7d;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  font-family: var(--mono);
+}
+.glitch-action-btn {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px;
+  background: #1a2e1a;
+  color: #7dff7d;
+  border: 1px solid #7dff7d;
+  border-radius: 0;
+  font-family: var(--mono);
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background 0.2s, color 0.2s;
+}
+.glitch-action-btn:hover {
+  background: #7dff7d;
+  color: #080b10;
+}
+
+/* Sfondo e flickering */
+.glitch-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 77, 94, 0.05) 2px, rgba(255, 77, 94, 0.05) 4px);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.is-glitched .glitch-overlay {
+  opacity: 1;
+  animation: glitch-scan 4s linear infinite, flicker 0.15s infinite;
+}
+@keyframes glitch-scan {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
+}
+@keyframes flicker {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+/* Header e status */
+.is-glitched .topbar {
+  border-bottom-color: #ff4d5e;
+}
+.is-glitched .top-status i {
+  background: #ff4d5e !important;
+  box-shadow: 0 0 13px #ff4d5e !important;
+  animation: pulse-red 0.3s infinite alternate;
+}
+@keyframes pulse-red {
+  to { opacity: 0.2; }
+}
+.is-glitched .top-status span {
+  color: #ff4d5e;
+}
+
+/* Hero e Discord */
+.is-glitched #profile-target {
+  transform: translateY(350px) rotate(25deg) !important;
+  opacity: 0.9;
+  pointer-events: none;
+  animation: discord-crash 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes discord-crash {
+  to { transform: translateY(200px) rotate(15deg); }
+}
+.is-glitched h1 span {
+  animation: glitch-text 0.3s infinite;
+}
+@keyframes glitch-text {
+  0% { transform: translate(0); }
+  20% { transform: translate(-5px, 3px); text-shadow: 3px 0 red, -3px 0 blue; }
+  40% { transform: translate(-5px, -3px); text-shadow: -3px 0 red, 3px 0 blue; }
+  60% { transform: translate(5px, 3px); text-shadow: 3px 0 red, -3px 0 blue; }
+  80% { transform: translate(5px, -3px); text-shadow: -3px 0 red, 3px 0 blue; }
+  100% { transform: translate(0); }
+}
+
+/* Progetti */
+.is-glitched .road-stage {
+  transform: translateY(100px) scale(0.9) !important;
+  transition: transform 1s ease;
+}
+.is-glitched .road-card[data-project="0"] {
+  transform: translate3d(-50%, 0, 0) rotate(-5deg) scale(1.05) !important;
+  border-color: #ff4d5e;
+  clip-path: polygon(0 0, 100% 0, 100% 40%, 90% 40%, 90% 100%, 0 100%);
+}
+.is-glitched .road-card[data-project="0"] .project-copy {
+  transform: translate(20px, -20px);
+}
+.is-glitched .road-controls {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Timeline */
+.is-glitched .timeline::before,
+.is-glitched .timeline::after {
+  transform: scaleX(0.3) translateY(20px) !important;
+  background: #ff4d5e !important;
+  opacity: 0.5;
+}
+.is-glitched .timeline-item {
+  transform: translateY(50px) rotate(2deg);
+}
+.is-glitched .timeline-item:nth-child(2) {
+  transform: translateY(80px) rotate(-3deg);
+}
+.is-glitched .timeline-item:nth-child(3) {
+  transform: translateY(30px) rotate(5deg);
+}
+
+/* Email Form */
+.is-glitched #contact-form {
+  animation: form-glitch 0.5s infinite alternate;
+}
+@keyframes form-glitch {
+  to { transform: translateX(5px); border-color: #ff4d5e; }
+}
+.is-glitched #contact-message {
+  color: #ff4d5e;
+  caret-color: transparent;
+}
+.is-glitched #contact-message::after {
+  content: "ERROR_";
+  animation: typing-bug 0.2s steps(2) infinite;
+}
+@keyframes typing-bug {
+  to { opacity: 0; }
+}
+
+/* Terminal Trigger Hint */
+.is-glitched #terminal-launch {
+  animation: terminal-pulse 1s infinite alternate;
+  color: #ff4d5e !important;
+  text-shadow: 0 0 10px #ff4d5e;
+}
+@keyframes terminal-pulse {
+  to { transform: scale(1.1); }
+}
+
+/* Colori Glitchati del Tema */
+.is-glitched body {
+  background: #0a0205;
+}
+
+/* =========================================
+   RESTORE SYSTEM OVERLAY
+   ========================================= */
+.restore-system {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: #000;
+  color: #7dff7d;
+  font-family: var(--mono);
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.restore-system.is-active {
+  pointer-events: auto;
+  opacity: 1;
+}
+.restore-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #7dff7d;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+.restore-log {
+  flex: 1;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.8;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.restore-line {
+  margin: 0;
+  white-space: pre-wrap;
+  opacity: 0.9;
+  animation: fadeIn 0.1s ease;
+}
+.restore-line.err {
+  color: #ff4d5e;
+}
+.restore-line.ok {
+  color: #7dff7d;
+}
+.restore-progress {
+  margin-top: 20px;
+  height: 4px;
+  background: #1a2e1a;
+  width: 100%;
+}
+.restore-progress-bar {
+  height: 100%;
+  background: #7dff7d;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
 
 @media (max-width: 900px) {
   .wrap {
@@ -2122,7 +2467,6 @@ h1 .dot {
     gap: 52px;
   }
 
-  /* su schermi stretti il glow resta dentro il viewport */
   .button {
     box-shadow: 0 0 11px var(--glow);
   }
@@ -2231,6 +2575,7 @@ h1 .dot {
     grid-template-columns: 1fr;
     grid-template-rows: minmax(300px, 1fr) 160px;
     border-radius: 14px;
+    contain: layout style paint;
   }
 
   .project-copy {
@@ -2312,7 +2657,6 @@ h1 .dot {
     bottom: 11px;
     font-size: 7px;
   }
-
 
   .art-optimizer .art-orbit {
     width: 130px;
@@ -2469,7 +2813,6 @@ h1 .dot {
     font-size: 8px;
   }
 
-  /* su schermi molto stretti il toggle mostra solo la lingua di arrivo */
   .lang-toggle {
     padding: 6px 9px;
   }
@@ -2554,7 +2897,6 @@ h1 .dot {
   }
 }
 
-/* --- terminal: chiusura animata --- */
 .terminal.is-closing {
   animation: terminal-out .3s cubic-bezier(.4, 0, .2, 1) both;
 }
@@ -2582,7 +2924,6 @@ h1 .dot {
   }
 }
 
-/* --- popup download tema --- */
 .theme-download {
   position: fixed;
   left: 50%;
@@ -2690,7 +3031,6 @@ h1 .dot {
   }
 }
 
-/* --- onda cambio tema: dal basso a sinistra verso l'alto a destra --- */
 .theme-wave {
   position: fixed;
   left: 0;
@@ -2731,7 +3071,6 @@ h1 .dot {
   }
 }
 
-/* --- onda sui pulsanti (lo strato ritagliato non tocca il glow del pulsante) --- */
 .button,
 .project-link,
 .road-nav,
@@ -2742,7 +3081,6 @@ h1 .dot {
   position: relative;
 }
 
-/* alone circolare: non viene ritagliato, quindi non può diventare un rettangolo */
 .ripple-layer {
   position: absolute;
   inset: 0;
@@ -2818,6 +3156,4 @@ h1 .dot {
   .life-card.is-visible:hover {
     transform: translateY(-7px) scale(1.022);
   }
-
-
 }
