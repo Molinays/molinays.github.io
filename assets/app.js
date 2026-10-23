@@ -10,6 +10,8 @@ const translations = {
     'nav.journey': 'Percorso',
     'nav.beyond': 'Oltre il codice',
     'nav.contact': 'Contatti',
+    'nav.menu': 'Apri menu',
+    'nav.close': 'Chiudi menu',
     'hero.label': 'Presentazione',
     'hero.eyebrow': 'Full-stack developer ed editor',
     'hero.desc': 'Tra <b>codice, server e hardware</b>. 17 y/o Developer ed Editor, adoro usare i computer, quindi perché non farlo?.',
@@ -25,7 +27,7 @@ const translations = {
     'discord.cta': 'Contattami su Discord',
     'discord.open': 'APRI PROFILO ↗',
     'tech.label': 'Puoi chiamarmi per',
-    'projects.label': 'Portfolio progetti: scorri per avanzare',
+    'projects.label': 'Portfolio progetti',
     'projects.title': 'I miei progetti',
     'projects.prev': 'Progetto precedente',
     'projects.next': 'Progetto successivo',
@@ -134,6 +136,8 @@ const translations = {
     'nav.journey': 'Journey',
     'nav.beyond': 'Beyond code',
     'nav.contact': 'Contact',
+    'nav.menu': 'Open menu',
+    'nav.close': 'Close menu',
     'hero.label': 'Introduction',
     'hero.eyebrow': 'Full-stack developer and editor',
     'hero.desc': 'Somewhere between <b>code, servers and hardware</b>. 17 y/o developer and editor, I love using computers — so why not make it my thing?',
@@ -149,7 +153,7 @@ const translations = {
     'discord.cta': 'Reach me on Discord',
     'discord.open': 'OPEN PROFILE ↗',
     'tech.label': 'You can call me for',
-    'projects.label': 'Project portfolio: scroll to advance',
+    'projects.label': 'Project portfolio',
     'projects.title': 'My projects',
     'projects.prev': 'Previous project',
     'projects.next': 'Next project',
@@ -397,22 +401,53 @@ function markPresenceUnavailable() {
   if (avatarDot) avatarDot.className = 'avatar-dot unavailable';
 }
 
-function activityIconUrl(activity) {
-  if (!activity) return '';
+const ACTIVITY_X_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>';
+const ACTIVITY_NOTE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V6l9-2v11"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="15.5" cy="15.5" r="2.5"/></svg>';
+
+function activityIconSources(activity) {
+  if (!activity) return [];
   const assets = activity.assets || {};
-  const large = assets.large_image;
   const appId = activity.application_id;
-  if (large) {
-    if (large.startsWith('mp:external/')) {
-      const path = large.replace('mp:external/', '');
-      return `https://media.discordapp.net/external/${path}`;
+  const sources = [];
+  for (const raw of [assets.large_image, assets.small_image]) {
+    if (!raw || typeof raw !== 'string') continue;
+    if (raw.startsWith('mp:external/')) {
+      sources.push(`https://media.discordapp.net/external/${raw.slice('mp:external/'.length)}`);
+    } else if (raw.startsWith('spotify:')) {
+      sources.push(`https://i.scdn.co/image/${raw.slice('spotify:'.length)}`);
+    } else if (appId) {
+      sources.push(`https://cdn.discordapp.com/app-assets/${appId}/${raw}.png`);
+    } else if (/^https?:\/\//.test(raw)) {
+      sources.push(raw);
     }
-    if (large.startsWith('spotify:')) return '';
-    if (appId) return `https://cdn.discordapp.com/app-assets/${appId}/${large}.png`;
-    return `https://cdn.discordapp.com/app-assets/${large}.png`;
   }
-  if (appId) return `https://cdn.discordapp.com/app-icons/${appId}/${activity.application_id}.png`;
-  return '';
+  if (appId) sources.push(`https://dcdn.dstn.to/app-icons/${appId}`);
+  return [...new Set(sources)];
+}
+
+function setActivityIcon(iconEl, sources, fallback) {
+  if (!iconEl) return;
+  iconEl.replaceChildren();
+  if (!sources.length) {
+    iconEl.innerHTML = fallback;
+    return;
+  }
+  const img = document.createElement('img');
+  img.alt = '';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  let index = 0;
+  img.addEventListener('error', () => {
+    index += 1;
+    if (index < sources.length) {
+      img.src = sources[index];
+      return;
+    }
+    img.remove();
+    iconEl.innerHTML = fallback;
+  });
+  img.src = sources[0];
+  iconEl.append(img);
 }
 
 function renderPresence(presence) {
@@ -444,29 +479,15 @@ function renderPresence(presence) {
   const iconEl = byId('activity-icon');
 
   if (spotify) {
-    if (spotify.album_art_url) {
-      iconEl.innerHTML = `<img src="${spotify.album_art_url}" alt="" loading="lazy">`;
-      iconEl.style.background = '';
-    } else {
-      iconEl.textContent = '♪';
-      iconEl.style.background = '';
-    }
+    setActivityIcon(iconEl, spotify.album_art_url ? [spotify.album_art_url] : [], ACTIVITY_NOTE_ICON);
     byId('activity-title').textContent = spotify.song || 'Spotify';
     byId('activity-sub').textContent = spotify.artist ? t('presence.byArtist', {artist: spotify.artist}) : t('presence.listening');
   } else if (game) {
-    const url = activityIconUrl(game);
-    if (url) {
-      iconEl.innerHTML = `<img src="${url}" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode('>'))">`;
-      iconEl.style.background = '';
-    } else {
-      iconEl.textContent = '>';
-      iconEl.style.background = '';
-    }
+    setActivityIcon(iconEl, activityIconSources(game), ACTIVITY_X_ICON);
     byId('activity-title').textContent = game.name || t('presence.activityDiscord');
     byId('activity-sub').textContent = game.details || game.state || t('presence.activityOngoing');
   } else {
-    iconEl.textContent = 'X';
-    iconEl.style.background = '';
+    setActivityIcon(iconEl, [], ACTIVITY_X_ICON);
     byId('activity-title').textContent = t('presence.noActivity');
     byId('activity-sub').textContent = t('presence.nothingNow');
   }
@@ -947,13 +968,12 @@ function setupParticleIcons() {
       
       const isGlitched = document.body.classList.contains('is-glitched') && isGlitchCanvas;
       
-      // Se è la canvas del glitch e il glitch è appena partito, inizializza le velocità
       if (isGlitched && !glitchStarted) {
         glitchStarted = true;
         particles.forEach(p => {
           p.target = null;
           p.vx = (Math.random() - 0.5) * 3;
-          p.vy = Math.random() * 2; // Inizia a cadere
+          p.vy = Math.random() * 2;
         });
       } else if (!isGlitched) {
         glitchStarted = false;
@@ -966,22 +986,19 @@ function setupParticleIcons() {
           const forming = hovered && particle.target && time >= particle.startAt && !isGlitched;
           
           if (isGlitched) {
-            // Fisica di caduta
-            particle.vy += 0.25 * step; // Gravità
+            particle.vy += 0.25 * step;
             particle.x += particle.vx * step;
             particle.y += particle.vy * step;
             
-            // Rimbalzo sui bordi laterali
             if (particle.x < 0 || particle.x > width) {
               particle.vx *= -1;
               particle.x = Math.max(0, Math.min(width, particle.x));
             }
             
-            // Si ferma sul fondo (per terra)
             if (particle.y > height - 15) {
               particle.y = height - 15;
               particle.vy = 0;
-              particle.vx *= 0.8; // Attrito
+              particle.vx *= 0.8;
             }
           } else if (forming) {
             if (particle.settled) {
@@ -1165,17 +1182,15 @@ function setupTerminal() {
   function triggerGlitch() {
     document.body.classList.add('is-glitched');
     
-    // Cambia status header
     const topStatusText = byId('top-status-text');
     const topStatusDot = byId('top-status-dot');
     if(topStatusText) topStatusText.textContent = 'STATUS : ERROR';
     if(topStatusDot) {
-      topStatusDot.className = ''; // rimuove .online
+      topStatusDot.className = '';
       topStatusDot.style.background = '#ff4d5e';
       topStatusDot.style.boxShadow = '0 0 13px #ff4d5e';
     }
 
-    // Crea overlay scanline
     if(!document.getElementById('glitch-overlay')) {
       const overlay = document.createElement('div');
       overlay.id = 'glitch-overlay';
@@ -1183,13 +1198,11 @@ function setupTerminal() {
       document.body.appendChild(overlay);
     }
     
-    // Mostra popup di errore
     const alertBox = byId('glitch-alert');
     if (alertBox) {
       alertBox.classList.add('is-visible');
     }
 
-    // Glitcha i temi (ciclo caotico)
     const themes = ['red', 'green', 'purple', 'amber'];
     let themeIndex = 0;
     const themeInt = setInterval(() => {
@@ -1202,7 +1215,6 @@ function setupTerminal() {
       themeIndex++;
     }, 800);
 
-    // Glitcha l'email input
     const emailInput = byId('contact-message');
     if (emailInput) {
       emailInput.value = '';
@@ -1218,7 +1230,6 @@ function setupTerminal() {
         if (charIdx > bugText.length + 20) charIdx = 0;
       }, 100);
 
-      // Blocca l'utente dal cancellare
       emailInput.addEventListener('keydown', (e) => {
         if (document.body.classList.contains('is-glitched') && e.key !== 'Tab') {
           e.preventDefault();
@@ -1228,7 +1239,6 @@ function setupTerminal() {
   }
 
   function fixSystem() {
-    // Crea l'overlay di restore
     const restoreOverlay = document.createElement('div');
     restoreOverlay.className = 'restore-system';
     restoreOverlay.innerHTML = `
@@ -1241,14 +1251,11 @@ function setupTerminal() {
     `;
     document.body.appendChild(restoreOverlay);
     
-    // Scrolla in cima per evitare che l'overlay si "sposti"
     window.scrollTo(0, 0);
     
-    // Forza il reflow
     void restoreOverlay.offsetWidth;
     restoreOverlay.classList.add('is-active');
 
-    // Rimuove l'animazione globale per non spostare l'overlay
     document.body.classList.remove('is-glitched');
     
     const logContainer = byId('restore-log');
@@ -1273,7 +1280,6 @@ function setupTerminal() {
     let logIndex = 0;
     let progress = 0;
     
-    // Aggiungi righe di log progressivamente
     const logInterval = setInterval(() => {
       if (logIndex < logs.length) {
         const p = document.createElement('p');
@@ -1289,7 +1295,6 @@ function setupTerminal() {
       } else {
         clearInterval(logInterval);
         
-        // Esegui il fix reale al termine della finta animazione
         setTimeout(() => {
           const topStatusText = byId('top-status-text');
           const topStatusDot = byId('top-status-dot');
@@ -1313,14 +1318,13 @@ function setupTerminal() {
           
           window.dispatchEvent(new Event('resize'));
 
-          // Dissolvi l'overlay di restore
           restoreOverlay.classList.remove('is-active');
           setTimeout(() => restoreOverlay.remove(), 400);
 
           print(t('terminal.fixed'), 'success');
-        }, 800); // Piccola pausa prima di togliere lo schermo nero
+        }, 800);
       }
-    }, 200); // Velocità di scrittura dei log
+    }, 200);
   }
 
   function run(raw){
@@ -1372,7 +1376,6 @@ function setupTerminal() {
   });
   form.addEventListener('submit',event=>{event.preventDefault();run(input.value);input.value='';});
 
-  // Easter egg trigger
   const glitchTrigger = byId('glitch-trigger');
   if (glitchTrigger) {
     glitchTrigger.addEventListener('click', () => {
@@ -1380,7 +1383,6 @@ function setupTerminal() {
     });
   }
 
-  // Chiudi popup allarme
   const alertClose = byId('glitch-alert-close');
   if(alertClose) {
     alertClose.addEventListener('click', () => {
@@ -1388,7 +1390,6 @@ function setupTerminal() {
     });
   }
 
-  // Apri terminale dal popup
   const alertOpenTerminal = byId('glitch-open-terminal');
   if(alertOpenTerminal) {
     alertOpenTerminal.addEventListener('click', () => {
@@ -1446,11 +1447,9 @@ function setupSmoothScroll() {
     event.preventDefault();
     history.replaceState(null, '', hash);
     
-    const road = document.querySelector('.road');
     const contact = document.querySelector('#contatti');
     
-    // Dissolvenza per i contatti o per tornare su
-    if (road && contact && (hash === '#contatti' || hash === '#top')) {
+    if (contact && (hash === '#contatti' || hash === '#top')) {
       const fade = document.createElement('div');
       fade.className = 'fade-transition';
       document.body.appendChild(fade);
@@ -1605,7 +1604,7 @@ function setupContactForm() {
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (document.body.classList.contains('is-glitched')) return; // Blocca invio se in glitch
+    if (document.body.classList.contains('is-glitched')) return;
     if (!validate()) {
       say('contact.checkFields', 'error');
       return;
@@ -1660,12 +1659,107 @@ function setupContactForm() {
   });
 }
 
+const TYPED_PHRASES = {
+  it: [
+    'backend developer.',
+    'frontend developer.',
+    'video editor.',
+    'techician.',
+    'hardware expert.'
+  ],
+  en: [
+    'backend developer.',
+    'frontend developer.',
+    'video editor.',
+    'techician.',
+    'hardware expert.'
+  ]
+};
+
+function setupTyping() {
+  const el = byId('typed');
+  if (!el) return;
+  let timer = 0;
+  let phraseIndex = 0;
+  let charIndex = 0;
+  let deleting = false;
+
+  function step() {
+    const phrases = TYPED_PHRASES[currentLanguage] || TYPED_PHRASES.it;
+    const phrase = phrases[phraseIndex % phrases.length];
+
+    if (!deleting) {
+      charIndex += 1;
+      el.textContent = phrase.slice(0, charIndex);
+      if (charIndex >= phrase.length) {
+        deleting = true;
+        timer = setTimeout(step, 2000);
+        return;
+      }
+    } else {
+      charIndex -= 1;
+      el.textContent = phrase.slice(0, Math.max(0, charIndex));
+      if (charIndex <= 0) {
+        deleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+      }
+    }
+    timer = setTimeout(step, deleting ? 40 : 70);
+  }
+
+  function restart() {
+    clearTimeout(timer);
+    phraseIndex = 0;
+    charIndex = 0;
+    deleting = false;
+    el.textContent = '';
+    step();
+  }
+
+  restart();
+  onLanguageChange(restart);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) clearTimeout(timer);
+    else restart();
+  });
+}
+
+function setupMobileNav() {
+  const toggle = byId('nav-toggle');
+  const menu = byId('mobile-menu');
+  if (!toggle || !menu) return;
+  let open = false;
+  const setOpen = (next, focusToggle = false) => {
+    open = next;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', t(open ? 'nav.close' : 'nav.menu'));
+    menu.hidden = !open;
+    if (!open && focusToggle) toggle.focus();
+  };
+  toggle.addEventListener('click', () => setOpen(!open));
+  menu.addEventListener('click', (event) => {
+    if (event.target.closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && open) setOpen(false, true);
+  });
+  window.addEventListener('scroll', () => {
+    if (open && window.scrollY > 24) setOpen(false);
+  }, { passive: true });
+  window.addEventListener('resize', () => {
+    if (open && window.innerWidth > 760) setOpen(false);
+  }, { passive: true });
+  onLanguageChange(() => setOpen(open));
+  setOpen(false);
+}
+
 setupLanguage();
+setupMobileNav();
+setupTyping();
 loadPresence();
 connectPresenceSocket();
 setupAmbient();
 setupBoot();
-setupRoad();
 setupTimeline();
 setupParticleIcons();
 setupReveal();
